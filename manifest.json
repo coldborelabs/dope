@@ -2,10 +2,18 @@
   "name": "Dope: Ballistic Log",
   "short_name": "Dope",
   "description": "Precision rifle ballistic calculator by Cold Bore Labs. Free, offline, no account.",
-  "start_url": "/",
+  "start_url": "/Dope/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0C0D0F",
   "theme_color": "#0C0D0F",
-  "categories": ["sports", "utilities"]
+  "categories": ["sports", "utilities"],
+  "icons": [
+    {
+      "src": "/Dope/dope-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
