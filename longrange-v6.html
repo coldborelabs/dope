@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0C0D0F"> 
+<link rel="apple-touch-icon" href="https://coldborelabs.github.io/dope/dope-icon-512.png">
+<link rel="apple-touch-icon" sizes="512x512" href="https://coldborelabs.github.io/dope/dope-icon-512.png">
+<title>Dope</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0C0D0F;--bg2:#161819;--bg3:#1E2122;--bg4:#252A2C;
+  --bd:#2A2E31;--bd2:#363C40;
+  --t1:#E8E3DC;--t2:#8A9099;--t3:#4A5058;
+  --ac:#C8955A;--ac2:#8A6038;--ok:#4CAF72;--no:#E05252;
+  --r:8px;--rl:14px;
+  --safe-top:env(safe-area-inset-top,0px);--safe-bot:env(safe-area-inset-bottom,0px)
+}
+html,body{height:100%;width:100%;background:var(--bg);color:var(--t1);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased}
+.app{display:flex;flex-direction:column;height:100%;width:100%;max-width:430px;margin:0 auto;padding-top:var(--safe-top)}
+/* topbar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:9px}
+.logomark{width:28px;height:28px;border-radius:7px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.app-name{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.app-ver{font-size:10px;color:var(--t3);margin-top:1px}
+/* unit toggle */
+.unit-toggle{display:flex;border:1px solid var(--bd2);border-radius:20px;overflow:hidden}
+.unit-btn{font-size:11px;padding:4px 11px;border:none;background:var(--bg3);color:var(--t2);cursor:pointer;transition:all .15s;font-weight:500}
+.unit-btn.on{background:var(--ac);color:#fff}
+/* rifle bar */
+.rifle-bar{display:flex;gap:7px;padding:8px 14px;overflow-x:auto;flex-shrink:0;border-bottom:1px solid var(--bd);scrollbar-width:none}
+.rifle-bar::-webkit-scrollbar{display:none}
+.chip{font-size:12px;padding:5px 13px;border:1px solid var(--bd2);border-radius:20px;background:var(--bg3);color:var(--t2);white-space:nowrap;cursor:pointer;transition:all .15s;flex-shrink:0;-webkit-user-select:none;user-select:none}
+.chip.on{background:var(--ac);color:#fff;border-color:var(--ac);font-weight:500}
+/* active strip */
+.active-strip{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:var(--bg3);border-bottom:1px solid var(--bd);gap:10px;flex-shrink:0;min-height:42px}
+.active-dot{width:7px;height:7px;border-radius:50%;background:var(--ac);flex-shrink:0}
+.active-rifle-label{font-size:13px;font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.active-stats{display:flex;gap:0;flex-shrink:0}
+.astat{display:flex;flex-direction:column;align-items:center;padding:0 9px;border-left:1px solid var(--bd2)}
+.astat-val{font-size:11px;font-weight:600;color:var(--t1);font-family:'SF Mono','Consolas','Menlo',monospace;white-space:nowrap}
+.astat-lbl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+/* nav */
+.nav{display:flex;border-bottom:1px solid var(--bd);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.tab{flex:1;min-width:52px;padding:9px 3px 8px;border:none;background:none;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;font-size:10px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;transition:color .15s;white-space:nowrap}
+.tab.on{color:var(--ac);border-bottom-color:var(--ac)}
+/* scroll + panels */
+.scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(16px + var(--safe-bot))}
+.pnl{display:none;flex-direction:column;gap:0}
+.pnl.on{display:flex}
+/* cards */
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);overflow:hidden}
+.card-head{padding:11px 14px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.card-title{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.07em}
+/* metrics */
+.mg{display:grid;grid-template-columns:repeat(auto-fit,minmax(78px,1fr));gap:7px}
+.met{background:var(--bg3);border-radius:var(--r);padding:9px 10px 8px;display:flex;flex-direction:column;gap:3px}
+.mv{font-size:17px;font-weight:600;line-height:1;color:var(--t1);font-family:'SF Mono','Consolas','Menlo',monospace}
+.mv span{font-size:9px;font-weight:400;color:var(--t3)}
+.ml{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em}
+/* distance strip */
+.fire-top{padding:13px 14px 0;display:flex;flex-direction:column;gap:10px}
+.dist-strip{background:var(--bg2);border-radius:var(--rl);padding:11px 14px 13px;border:1px solid var(--bd)}
+.dist-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+.dist-label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em}
+.dist-val{font-family:'SF Mono','Consolas','Menlo',monospace;font-size:34px;font-weight:600;color:var(--ac);line-height:1;letter-spacing:-.02em}
+.dist-val span{font-size:13px;font-weight:400;color:var(--t3);margin-left:3px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;background:var(--bd2);border-radius:3px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;background:var(--ac);border-radius:50%;cursor:pointer;border:3px solid var(--bg);box-shadow:0 0 0 1px var(--ac2)}
+input[type=range]::-moz-range-thumb{width:24px;height:24px;background:var(--ac);border-radius:50%;cursor:pointer;border:3px solid var(--bg)}
+.dist-marks{display:flex;justify-content:space-between;font-size:9px;color:var(--t3);margin-top:5px}
+/* angle row */
+.angle-row{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:10px 14px}
+.angle-lbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;flex-shrink:0}
+.angle-track{flex:1}
+.angle-big{font-family:'SF Mono','Consolas','Menlo',monospace;font-size:18px;font-weight:600;color:var(--t1);min-width:52px;text-align:right;flex-shrink:0}
+.angle-corr{font-size:10px;color:var(--ac);text-align:right;min-width:80px;flex-shrink:0}
+/* solution */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sb{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:12px 14px;display:flex;flex-direction:column;gap:3px}
+.snum{font-family:'SF Mono','Consolas','Menlo',monospace;font-size:46px;font-weight:600;color:var(--t1);line-height:1;letter-spacing:-.03em}
+.snum.ac{color:var(--ac)}
+.sunit{font-size:12px;color:var(--t3);font-weight:400}
+.salt{font-size:11px;color:var(--t2);margin-top:2px;font-family:'SF Mono','Consolas','Menlo',monospace}
+.slbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em}
+/* cold bore badge */
+.cb-badge{font-size:9px;background:rgba(200,149,90,.15);color:var(--ac);padding:1px 7px;border-radius:8px;white-space:nowrap}
+/* secondary */
+.sec-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:0 14px}
+.sec-met{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:8px 7px;display:flex;flex-direction:column;gap:2px}
+.sec-val{font-size:14px;font-weight:600;color:var(--t1);line-height:1;font-family:'SF Mono','Consolas','Menlo',monospace}
+.sec-unit{font-size:9px;color:var(--t3)}
+.sec-lbl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+/* wind clock */
+.wind-section{padding:0 14px}
+.wind-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--rl);padding:13px}
+.wind-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+.wind-title{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em}
+.wind-readout{display:flex;gap:10px;align-items:center}
+.wind-dir-big{font-family:'SF Mono','Consolas','Menlo',monospace;font-size:20px;font-weight:600;color:var(--ac);min-width:42px;text-align:right}
+.clock-wrap{position:relative;width:190px;height:190px;margin:0 auto;touch-action:none}
+.clock-svg{width:100%;height:100%}
+.clock-outer{fill:none;stroke:var(--bd);stroke-width:1.5}
+.clock-tick{stroke:var(--t3);stroke-width:1}
+.clock-tick-maj{stroke:var(--t2);stroke-width:1.5}
+.clock-needle{stroke:var(--ac);stroke-width:2.5;stroke-linecap:round}
+.clock-needle-tail{stroke:var(--t3);stroke-width:1.5;stroke-linecap:round}
+.clock-center{fill:var(--ac)}
+.clock-cardinal{fill:var(--t2);font-size:11px;font-weight:600;font-family:-apple-system,system-ui,sans-serif}
+.clock-deg-label{fill:var(--ac);font-size:12px;font-weight:700;font-family:'SF Mono','Consolas','Menlo',monospace;text-anchor:middle;dominant-baseline:middle}
+.fv-label{fill:var(--t3);font-size:9px;text-transform:uppercase;font-family:-apple-system,system-ui,sans-serif;text-anchor:middle}
+.fv-val{fill:var(--t1);font-size:11px;font-weight:600;font-family:'SF Mono','Consolas','Menlo',monospace;text-anchor:middle}
+.wind-inputs{display:flex;gap:8px;align-items:center;margin-top:11px}
+.wind-inputs label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.wind-speed-inp{flex:1;font-size:16px;font-weight:600;font-family:'SF Mono','Consolas','Menlo',monospace;padding:8px 10px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg3);color:var(--t1);text-align:center;width:0}
+.wind-speed-inp:focus{outline:none;border-color:var(--ac)}
+/* log shot bar */
+.log-bar{padding:9px 14px 0;display:flex;gap:8px}
+.lsb-sel{flex:1;font-size:13px;padding:10px 9px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg3);color:var(--t1)}
+.lsb-note{flex:1.4;font-size:13px;padding:10px 9px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg3);color:var(--t1)}
+.lsb-note::placeholder{color:var(--t3)}
+.lsb-note:focus,.lsb-sel:focus{outline:none;border-color:var(--ac)}
+.btn-log{padding:10px 15px;background:var(--ac);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer}
+.btn-log:active{opacity:.75}
+.rifle-note{padding:5px 14px 11px;font-size:10px;color:var(--t3)}
+/* forms */
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.fv{display:flex;flex-direction:column;gap:4px}
+.fv label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em}
+.fv input,.fv select,.fv textarea{font-size:13px;padding:8px 10px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg3);color:var(--t1);width:100%}
+.fv input:focus,.fv select:focus,.fv textarea:focus{outline:none;border-color:var(--ac)}
+.fv input[readonly]{color:var(--ac);background:var(--bg4)}
+/* wx */
+.wx-panel,.log-panel,.dope-panel,.sess-panel,.rifles-panel,.true-panel{padding:13px 14px;display:flex;flex-direction:column;gap:10px}
+.wxrow{display:flex;gap:8px;flex-wrap:wrap}
+.wxf{display:flex;flex-direction:column;gap:3px;min-width:68px}
+.wxf label{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em}
+.wxf input{font-size:13px;padding:6px 8px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg3);color:var(--t1);width:78px}
+.wxf input:focus{outline:none;border-color:var(--ac)}
+.da-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0}
+.da-cell{padding:10px 12px;border-right:1px solid var(--bd)}
+.da-cell:last-child{border-right:none}
+.da-val{font-size:14px;font-weight:600;color:var(--ac);font-family:'SF Mono','Consolas','Menlo',monospace}
+.da-lbl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.dabar{height:4px;border-radius:2px;background:var(--bg4);margin-top:5px;overflow:hidden}
+.dafill{height:100%;border-radius:2px;background:var(--ac);transition:width .4s}
+.danote{font-size:10px;color:var(--t3);margin-top:4px}
+/* log table */
+.log-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.lt{width:100%;font-size:11px;border-collapse:collapse;min-width:480px}
+.lt th{padding:7px 9px;color:var(--t3);font-size:9px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}
+.lt td{padding:7px 9px;border-bottom:1px solid var(--bd);color:var(--t2);white-space:nowrap}
+.lt td:first-child{color:var(--t1);font-weight:600}
+.lt tr:last-child td{border-bottom:none}
+.hit-cell{color:var(--ok);font-weight:600}
+.miss-cell{color:var(--no);font-weight:600}
+/* dope */
+.dope-scroll{overflow-x:auto}
+.dt{width:100%;font-size:12px;border-collapse:collapse}
+.dt th{padding:8px 10px;color:var(--t3);font-size:9px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--bd);text-align:center}
+.dt th:first-child{text-align:left}
+.dt td{padding:8px 10px;border-bottom:1px solid var(--bd);color:var(--t2);text-align:center;font-family:'SF Mono','Consolas','Menlo',monospace}
+.dt td:first-child{color:var(--t1);font-weight:600;text-align:left;font-family:inherit}
+.dt tr:last-child td{border-bottom:none}
+.dt tr.ar td{background:rgba(200,149,90,.12);color:var(--ac);font-weight:600}
+/* session */
+.shero{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.sstat{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:10px 12px}
+.snum2{font-size:22px;font-weight:700;color:var(--ac);font-family:'SF Mono','Consolas','Menlo',monospace;line-height:1}
+.slbl2{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-top:3px}
+.ssub{font-size:10px;color:var(--t2);margin-top:2px}
+.hit-bar-track{height:7px;border-radius:4px;background:var(--bg4);overflow:hidden}
+.hit-bar-fill{height:100%;border-radius:4px;background:var(--ok);transition:width .6s}
+.dbrow{display:flex;align-items:center;gap:8px;padding:0 14px 5px}
+.dblbl{font-size:11px;color:var(--t2);min-width:62px}
+.dbtrack{flex:1;height:5px;border-radius:2px;background:var(--bg4);overflow:hidden}
+.dbfill{height:100%;border-radius:2px;background:var(--ac)}
+.dbct{font-size:11px;color:var(--t3);min-width:20px;text-align:right}
+.rb-card{display:flex;justify-content:space-between;align-items:center;padding:9px 13px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--bd)}
+.rb-name{font-size:12px;font-weight:600}
+.rb-sub{font-size:10px;color:var(--t3);margin-top:1px}
+.rb-pct{font-size:17px;font-weight:700;font-family:'SF Mono','Consolas','Menlo',monospace}
+.rb-sub2{font-size:10px;color:var(--t3);text-align:right;margin-top:2px}
+.sess-notes{width:100%;font-size:13px;padding:10px 11px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg3);color:var(--t1);resize:none;min-height:75px;font-family:inherit}
+.sess-notes:focus{outline:none;border-color:var(--ac)}
+.wx-snap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.wx-snap-cell{padding:8px 11px;border-right:1px solid var(--bd)}
+.wx-snap-cell:nth-child(3n){border-right:none}
+.wx-snap-val{font-size:13px;font-weight:600;color:var(--t1);font-family:'SF Mono','Consolas','Menlo',monospace}
+.wx-snap-lbl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+/* rifles */
+.rifle-card-specs{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.rcs{padding:8px 11px;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+.rcs:nth-child(3n){border-right:none}
+.rcs:nth-last-child(-n+3){border-bottom:none}
+.rcs-val{font-size:13px;font-weight:600;color:var(--t1);font-family:'SF Mono','Consolas','Menlo',monospace}
+.rcs-lbl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.rifle-notes-field{padding:10px 14px;border-top:1px solid var(--bd)}
+.rifle-notes-field textarea{width:100%;font-size:12px;padding:7px 9px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg3);color:var(--t1);resize:none;font-family:inherit;min-height:50px}
+.rifle-notes-field textarea:focus{outline:none;border-color:var(--ac)}
+/* buttons */
+.bpri{font-size:12px;padding:9px 18px;background:var(--ac);color:#fff;border:none;border-radius:var(--r);cursor:pointer;font-weight:500;transition:opacity .15s}
+.bpri:active{opacity:.8}
+.bpri:disabled{opacity:.45}
+.bout{font-size:11px;padding:6px 12px;background:none;border:1px solid var(--bd2);border-radius:var(--r);cursor:pointer;color:var(--t2);transition:all .15s}
+.bout:active{border-color:var(--ac);color:var(--ac)}
+.btn-sm2{font-size:11px;padding:5px 11px;border:1px solid var(--bd2);border-radius:var(--r);cursor:pointer;background:var(--bg3);color:var(--t2)}
+.btn-sm2:active{border-color:var(--ac);color:var(--ac)}
+.btn-add-rifle{padding:12px 16px;background:none;border:1px dashed var(--bd2);border-radius:var(--rl);color:var(--t3);font-size:13px;cursor:pointer;width:100%;text-align:center}
+.btn-remove{font-size:11px;padding:4px 10px;border:1px solid var(--no);border-radius:var(--r);background:none;color:var(--no);cursor:pointer}
+.btn-edit{font-size:11px;padding:4px 10px;border:1px solid var(--bd2);border-radius:var(--r);background:none;color:var(--t2);cursor:pointer}
+.btn-edit:active{border-color:var(--ac);color:var(--ac)}
+.btn-export{display:flex;align-items:center;justify-content:center;gap:7px;padding:12px;background:var(--ac);color:#fff;border:none;border-radius:var(--rl);font-size:14px;font-weight:600;cursor:pointer;width:100%}
+.btn-export:active{opacity:.8}
+.btn-export:disabled{opacity:.45}
+.card-head-row{display:flex;justify-content:space-between;align-items:center}
+.section-lbl{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;padding:0 0 5px}
+.empty-state{text-align:center;padding:28px 16px;font-size:13px;color:var(--t3)}
+/* modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;justify-content:center;padding-bottom:var(--safe-bot)}
+.modal-bg.on{display:flex}
+.modal{background:var(--bg2);border-radius:20px 20px 0 0;padding:18px 18px 26px;width:100%;max-width:430px;display:flex;flex-direction:column;gap:11px;border-top:1px solid var(--bd2)}
+.modal-handle{width:36px;height:4px;border-radius:2px;background:var(--bd2);margin:0 auto 6px}
+.modal-title{font-size:15px;font-weight:600}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.mf{display:flex;flex-direction:column;gap:4px}
+.mf label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em}
+.mf input,.mf select,.mf textarea{font-size:14px;padding:9px 10px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg3);color:var(--t1);width:100%}
+.mf textarea{resize:none;min-height:56px;font-family:inherit;font-size:13px}
+.mf input:focus,.mf select:focus,.mf textarea:focus{outline:none;border-color:var(--ac)}
+.modal-actions{display:flex;gap:8px;margin-top:2px}
+.btn-cancel{flex:1;padding:12px;border:1px solid var(--bd2);border-radius:var(--r);background:none;color:var(--t2);font-size:13px;cursor:pointer}
+.btn-save{flex:2;padding:12px;background:var(--ac);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:600;cursor:pointer}
+
+/* ══ GROUPS TAB ══ */
+.tgt-upload-zone{border:2px dashed var(--bd2);border-radius:var(--rl);padding:28px 16px;text-align:center;cursor:pointer;transition:border-color .2s;position:relative;background:var(--bg3)}
+.tgt-upload-zone:hover,.tgt-upload-zone.drag{border-color:var(--ac)}
+.tgt-upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.tgt-upload-icon{font-size:32px;margin-bottom:8px;display:block}
+.tgt-upload-lbl{font-size:13px;color:var(--t2);line-height:1.5}
+.tgt-upload-sub{font-size:11px;color:var(--t3);margin-top:4px}
+.tgt-canvas-wrap{position:relative;width:100%;border-radius:var(--rl);overflow:hidden;border:1px solid var(--bd);background:#000;touch-action:none}
+.tgt-canvas-wrap canvas{display:block;width:100%;height:auto}
+.tgt-tools{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.tgt-tool-btn{font-size:11px;padding:6px 13px;border:1px solid var(--bd2);border-radius:20px;background:var(--bg3);color:var(--t2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.tgt-tool-btn.active{background:var(--ac);color:#fff;border-color:var(--ac)}
+.tgt-tool-btn.poa-mode{background:rgba(76,175,114,.15);border-color:var(--ok);color:var(--ok)}
+.tgt-tool-btn.poa-mode.active{background:var(--ok);color:#fff}
+.tgt-tool-btn.del-mode{background:rgba(224,82,82,.12);border-color:var(--no);color:var(--no)}
+.tgt-tool-btn.del-mode.active{background:var(--no);color:#fff}
+.tgt-stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.tg-stat{padding:10px 12px;border-right:1px solid var(--bd)}
+.tg-stat:last-child{border-right:none}
+.tg-val{font-size:17px;font-weight:600;color:var(--ac);font-family:'SF Mono','Consolas','Menlo',monospace;line-height:1}
+.tg-lbl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-top:3px}
+.tgt-legend{display:flex;gap:14px;flex-wrap:wrap}
+.tgt-leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2)}
+.tgt-leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.tgt-scale-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tgt-scale-row label{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.tgt-scale-inp{font-size:13px;padding:6px 9px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg3);color:var(--t1);width:70px;text-align:center}
+.tgt-scale-inp:focus{outline:none;border-color:var(--ac)}
+.tgt-scale-sel{font-size:13px;padding:6px 9px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg3);color:var(--t1)}
+.tgt-scale-sel:focus{outline:none;border-color:var(--ac)}
+.tgt-shot-row{display:flex;align-items:center;gap:10px;padding:7px 13px;border-bottom:1px solid var(--bd)}
+.tgt-shot-row:last-child{border-bottom:none}
+.tgt-shot-num{font-size:11px;font-weight:600;color:var(--t3);min-width:18px}
+.tgt-shot-info{flex:1;font-size:11px;color:var(--t2)}
+.tgt-shot-del{font-size:10px;padding:3px 8px;border:1px solid var(--bd2);border-radius:var(--r);background:none;color:var(--t3);cursor:pointer}
+.tgt-shot-del:active{border-color:var(--no);color:var(--no)}
+.tgt-snap-sel{font-size:13px;padding:7px 9px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg3);color:var(--t1)}
+.tgt-snap-sel:focus{outline:none;border-color:var(--ac)}
+.tgt-info-bar{padding:7px 13px;background:rgba(200,149,90,.08);border-top:1px solid rgba(200,149,90,.2);font-size:11px;color:var(--ac)}
+
+
+/* ── Upgraded modal sections ── */
+.modal{overflow-y:auto}
+.mf select{font-size:13px;padding:9px 10px;border:1px solid var(--bd2);border-radius:var(--r);background:var(--bg3);color:var(--t1);width:100%;-webkit-appearance:none;appearance:none}
+.mf select:focus{outline:none;border-color:var(--ac)}
+.modal-section-lbl{font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin:10px 0 4px}
+
+@media(max-width:380px){.sg{grid-template-columns:1fr}.shero{grid-template-columns:1fr 1fr}.sec-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="logomark">&#8853;</div>
+    <div>
+      <div class="app-name">Dope</div>
+      <div class="app-ver">v3 &middot; <span id="active-unit-lbl">MOA</span></div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <div class="unit-toggle">
+      <button class="unit-btn on" id="ubtn-moa" onclick="setUnit('moa')">MOA</button>
+      <button class="unit-btn" id="ubtn-mrad" onclick="setUnit('mrad')">MRAD</button>
+    </div>
+    <button class="btn-sm2" onclick="openAdd()">+ Add</button>
+  </div>
+</div>
+
+<!-- CHIPS -->
+<div class="rifle-bar" id="chips"></div>
+
+<!-- ACTIVE STRIP -->
+<div class="active-strip" id="active-strip">
+  <div style="font-size:12px;color:var(--t3)">No rifle selected</div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="tab on" onclick="showTab('fire',this)">Fire</button>
+  <button class="tab" onclick="showTab('wx',this)">Weather</button>
+  <button class="tab" onclick="showTab('log',this)">Log</button>
+  <button class="tab" onclick="showTab('dope',this)">Dope</button>
+  <button class="tab" onclick="showTab('true',this)">True</button>
+  <button class="tab" onclick="showTab('sess',this)">Session</button>
+  <button class="tab" onclick="showTab('gear',this)">Rifles</button>
+  <button class="tab" onclick="showTab('groups',this)">Groups</button>
+</div>
+
+<div class="scroll">
+
+<!-- FIRE SOLUTION -->
+<div class="pnl on" id="pnl-fire">
+  <div class="fire-top">
+    <div class="dist-strip">
+      <div class="dist-header">
+        <div class="dist-label">Distance</div>
+        <div class="dist-val" id="ddsp">500<span>yds</span></div>
+      </div>
+      <input type="range" id="dslider" min="100" max="1500" step="25" value="500" oninput="onDist(this.value)">
+      <div class="dist-marks"><span>100</span><span>500</span><span>1000</span><span>1500</span></div>
+    </div>
+    <div class="angle-row">
+      <div class="dist-label angle-lbl">Angle</div>
+      <div class="angle-track">
+        <input type="range" id="aslider" min="-45" max="45" step="1" value="0" oninput="onAngle(this.value)">
+        <div class="dist-marks" style="padding:0 2px"><span>-45&deg;</span><span>0&deg;</span><span>+45&deg;</span></div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;min-width:80px">
+        <div class="angle-big" id="angle-disp">0&deg;</div>
+        <div style="font-size:9px;color:var(--ac)" id="angle-corr">&mdash;</div>
+      </div>
+    </div>
+    <div class="sg">
+      <div class="sb">
+        <div class="slbl">Elevation <span id="cb-elev-badge" class="cb-badge" style="display:none">cold bore adj</span></div>
+        <div class="snum ac" id="selev">&ndash;</div>
+        <div class="sunit" id="selev-unit">MOA</div>
+        <div class="salt" id="selevalt">&ndash; MRAD</div>
+      </div>
+      <div class="sb">
+        <div class="slbl">Windage</div>
+        <div class="snum" id="swind">&ndash;</div>
+        <div class="sunit" id="swind-unit">MOA</div>
+        <div class="salt" id="swindalt">&ndash; MRAD</div>
+      </div>
+    </div>
+  </div>
+  <div class="sec-grid" style="margin-top:8px">
+    <div class="sec-met"><div class="sec-val" id="sdrop">&ndash;</div><div class="sec-unit">in</div><div class="sec-lbl">Drop</div></div>
+    <div class="sec-met"><div class="sec-val" id="stof">&ndash;</div><div class="sec-unit">s</div><div class="sec-lbl">TOF</div></div>
+    <div class="sec-met"><div class="sec-val" id="svel">&ndash;</div><div class="sec-unit">fps</div><div class="sec-lbl">Vel</div></div>
+    <div class="sec-met"><div class="sec-val" id="segy">&ndash;</div><div class="sec-unit">ft&middot;lb</div><div class="sec-lbl">Energy</div></div>
+  </div>
+  <div class="wind-section" style="margin-top:8px">
+    <div class="wind-card">
+      <div class="wind-header">
+        <div class="wind-title">Wind</div>
+        <div class="wind-readout">
+          <div class="wind-dir-big" id="wind-dir-txt">90&deg;</div>
+          <div style="font-size:11px;color:var(--t3)" id="wind-card-txt">E</div>
+        </div>
+      </div>
+      <div class="clock-wrap" id="clock-wrap">
+        <svg class="clock-svg" viewBox="0 0 200 200" id="clock-svg">
+          <circle cx="100" cy="100" r="90" class="clock-outer"/>
+          <g id="clock-ticks"></g>
+          <text class="clock-cardinal" x="100" y="18" text-anchor="middle" dominant-baseline="middle">N</text>
+          <text class="clock-cardinal" x="182" y="100" text-anchor="middle" dominant-baseline="middle">E</text>
+          <text class="clock-cardinal" x="100" y="182" text-anchor="middle" dominant-baseline="middle">S</text>
+          <text class="clock-cardinal" x="18" y="100" text-anchor="middle" dominant-baseline="middle">W</text>
+          <g id="needle-group">
+            <line x1="100" y1="100" x2="100" y2="22" class="clock-needle"/>
+            <line x1="100" y1="100" x2="100" y2="148" class="clock-needle-tail"/>
+          </g>
+          <circle cx="100" cy="100" r="5" class="clock-center"/>
+          <text class="fv-label" x="100" y="126">FULL VALUE</text>
+          <text class="fv-val" id="fv-text" x="100" y="140">&ndash; mph</text>
+          <text class="clock-deg-label" id="deg-text" x="100" y="163">090&deg;</text>
+        </svg>
+      </div>
+      <div class="wind-inputs">
+        <label>Speed</label>
+        <input type="number" class="wind-speed-inp" id="wspeed" value="0" min="0" max="60" oninput="calc()" inputmode="decimal">
+        <label>mph</label>
+      </div>
+    </div>
+  </div>
+  <div class="log-bar">
+    <select class="lsb-sel" id="lres">
+      <option>Hit</option>
+      <option>Miss &mdash; high</option>
+      <option>Miss &mdash; low</option>
+      <option>Miss &mdash; left</option>
+      <option>Miss &mdash; right</option>
+    </select>
+    <input class="lsb-note" type="text" id="lnote" placeholder="Note / cold bore">
+    <button class="btn-log" onclick="logShot()">Log</button>
+  </div>
+  <div class="rifle-note" id="rifle-note">Select a rifle above</div>
+</div>
+
+<!-- WEATHER -->
+<div class="pnl" id="pnl-wx">
+  <div class="wx-panel">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Kestrel / Tactix entry</div>
+        <div style="display:flex;gap:6px">
+          <button class="btn-sm2" onclick="setStd()">STD</button>
+          <button class="btn-sm2" onclick="clrWx()">Clear</button>
+        </div>
+      </div>
+      <div style="padding:12px 14px">
+        <div class="wxrow">
+          <div class="wxf"><label>Temp &deg;F</label><input type="number" id="wtemp" value="59" inputmode="decimal" oninput="updDA()"></div>
+          <div class="wxf"><label>Humid %</label><input type="number" id="whumid" value="50" inputmode="decimal" oninput="updDA()"></div>
+          <div class="wxf"><label>Pres inHg</label><input type="number" id="wpres" value="29.92" step=".01" inputmode="decimal" oninput="updDA()"></div>
+          <div class="wxf"><label>Altitude ft</label><input type="number" id="walt" value="0" inputmode="decimal" oninput="updDA()"></div>
+          <div class="wxf"><label>Wind mph</label><input type="number" id="wwind-wx" value="0" inputmode="decimal" oninput="syncWind()"></div>
+          <div class="wxf"><label>Wind dir &deg;</label><input type="number" id="wwdir-wx" value="90" inputmode="decimal" oninput="syncWindDir()"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Derived conditions</div></div>
+      <div class="da-grid">
+        <div class="da-cell"><div class="da-val" id="wda">&ndash;</div><div class="da-lbl">DA ft</div></div>
+        <div class="da-cell"><div class="da-val" id="wsv">&ndash;</div><div class="da-lbl">Snd fps</div></div>
+        <div class="da-cell"><div class="da-val" id="wvc">&ndash;</div><div class="da-lbl">Vel %</div></div>
+        <div class="da-cell"><div class="da-val" id="wfv">&ndash;</div><div class="da-lbl">FV mph</div></div>
+      </div>
+      <div style="padding:4px 14px 12px">
+        <div class="dabar"><div class="dafill" id="dafl" style="width:30%"></div></div>
+        <div class="danote" id="danote">Density altitude</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOG -->
+<div class="pnl" id="pnl-log">
+  <div class="log-panel">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Shot history</div>
+        <button class="btn-sm2" onclick="clrLog()">Clear</button>
+      </div>
+      <div id="log-empty" class="empty-state">No shots logged yet.</div>
+      <div class="log-scroll">
+        <table class="lt" id="logtbl" style="display:none">
+          <thead><tr><th>Rifle</th><th>Dist</th><th>Elev</th><th>Wind</th><th>Angle</th><th>DA</th><th>Result</th><th>Note</th></tr></thead>
+          <tbody id="logbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DOPE -->
+<div class="pnl" id="pnl-dope">
+  <div class="dope-panel">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Dope card</div>
+        <div style="font-size:11px;color:var(--t3)" id="dope-lbl">&mdash;</div>
+      </div>
+      <div class="dope-scroll">
+        <table class="dt">
+          <thead><tr><th>Dist</th><th id="dope-h1">Elev MOA</th><th id="dope-h2">Elev MRAD</th><th>Drop in</th><th>TOF s</th></tr></thead>
+          <tbody id="dopebody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TRUING -->
+<div class="pnl" id="pnl-true">
+  <div class="true-panel">
+    <div class="card">
+      <div class="card-head"><div class="card-title">Velocity truing</div></div>
+      <div style="padding:10px 14px;font-size:12px;color:var(--t2);line-height:1.55">After confirmed hits, use observed vs predicted to find your true MV.</div>
+      <div style="padding:0 14px 14px;display:flex;flex-direction:column;gap:9px">
+        <div class="fg2">
+          <div class="fv"><label>Distance (yds)</label><input type="number" id="tr-dist" inputmode="decimal" value="500" oninput="updTruePred()"></div>
+          <div class="fv"><label>Predicted elev</label><input type="text" id="tr-pred" readonly placeholder="auto" style="color:var(--ac)"></div>
+        </div>
+        <div class="fg2">
+          <div class="fv"><label>Observed elev</label><input type="number" id="tr-obs" inputmode="decimal" placeholder="e.g. 8.50"></div>
+          <div class="fv"><label>Current MV (fps)</label><input type="text" id="tr-mv-show" readonly placeholder="auto" style="color:var(--ac)"></div>
+        </div>
+        <button class="bpri" onclick="calcTrue()" style="width:100%">Calculate true MV</button>
+        <div id="true-result" style="display:none;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:12px 14px">
+          <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">Truing result</div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline">
+            <div>
+              <div id="true-mv-result" style="font-size:26px;font-weight:600;font-family:'SF Mono','Consolas','Menlo',monospace;color:var(--ac)">&mdash;</div>
+              <div style="font-size:9px;color:var(--t3)">Suggested true MV (fps)</div>
+            </div>
+            <div style="text-align:right">
+              <div id="true-mv-delta" style="font-size:14px;font-weight:600;color:var(--t2)">&mdash;</div>
+              <div style="font-size:9px;color:var(--t3)">&Delta; from entered MV</div>
+            </div>
+          </div>
+          <button class="bpri" onclick="applyTruing()" style="width:100%;margin-top:10px;font-size:12px;padding:8px">Apply to active rifle profile</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Cold bore offset</div></div>
+      <div style="padding:10px 14px;font-size:12px;color:var(--t2);line-height:1.55">Record your consistent cold bore offset. Applied automatically when your log note contains "cold".</div>
+      <div style="padding:0 14px 14px;display:flex;flex-direction:column;gap:9px">
+        <div class="fg2">
+          <div class="fv"><label>Elev offset (MOA)</label><input type="number" id="cb-elev-inp" inputmode="decimal" placeholder="e.g. -0.25" step="0.25"></div>
+          <div class="fv"><label>Wind offset (MOA)</label><input type="number" id="cb-wind-inp" inputmode="decimal" placeholder="e.g. 0.0" step="0.25"></div>
+        </div>
+        <button class="bout" onclick="saveColdBore()" style="width:100%">Save cold bore offset</button>
+        <div id="cb-saved" style="font-size:11px;color:var(--ok);display:none">&#10003; Saved</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SESSION -->
+<div class="pnl" id="pnl-sess">
+  <div class="sess-panel">
+    <div class="shero" id="shero"></div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Hit rate</div><div class="da-val" id="shitpct" style="font-size:13px">&mdash;</div></div>
+      <div style="padding:10px 14px 12px"><div class="hit-bar-track"><div class="hit-bar-fill" id="hitfill" style="width:0%"></div></div></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">By distance</div></div>
+      <div id="distbk" style="padding:10px 0 4px"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Per rifle</div></div>
+      <div id="riflebk" style="padding:10px 14px;display:flex;flex-direction:column;gap:7px"></div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div class="card-title">Conditions</div></div>
+      <div class="wx-snap-grid" id="sesswx"></div>
+    </div>
+    <div>
+      <div class="section-lbl">Session notes</div>
+      <textarea class="sess-notes" id="sessnotes" rows="3" placeholder="Conditions, equipment notes, next session goals&hellip;"></textarea>
+    </div>
+    <button class="btn-export" id="expbtn" onclick="exportPDF()">&#8595; Export session PDF</button>
+  </div>
+</div>
+
+<!-- RIFLES -->
+<div class="pnl" id="pnl-gear">
+  <div class="rifles-panel">
+    <div id="rifle-cards"></div>
+    <button class="btn-add-rifle" onclick="openAdd()">+ Add rifle</button>
+  </div>
+</div>
+
+
+<!-- GROUPS / TARGET PHOTO -->
+<div class="pnl" id="pnl-groups">
+  <div style="padding:13px 14px;display:flex;flex-direction:column;gap:10px">
+    <div id="tgt-upload-area">
+      <div class="card-title" style="margin-bottom:8px">Target photo</div>
+      <div class="tgt-upload-zone" id="tgt-drop-zone">
+        <input type="file" id="tgt-file" accept="image/*" capture="environment" onchange="tgtLoadFile(this)">
+        <span class="tgt-upload-icon">🎯</span>
+        <div class="tgt-upload-lbl">Tap to upload or take photo</div>
+        <div class="tgt-upload-sub">JPEG · PNG · HEIC supported</div>
+      </div>
+    </div>
+    <div id="tgt-canvas-section" style="display:none">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="card" style="padding:10px 13px">
+          <div class="tgt-tools">
+            <button class="tgt-tool-btn active" id="tbt-poi" onclick="tgtSetMode('poi')">● Impact (POI)</button>
+            <button class="tgt-tool-btn poa-mode" id="tbt-poa" onclick="tgtSetMode('poa')">⊕ Aim (POA)</button>
+            <button class="tgt-tool-btn del-mode" id="tbt-del" onclick="tgtSetMode('del')">✕ Remove</button>
+            <button class="tgt-tool-btn" onclick="tgtClear()" style="margin-left:auto">Clear all</button>
+            <button class="tgt-tool-btn" onclick="tgtChangePhoto()">New photo</button>
+          </div>
+          <div class="tgt-info-bar" id="tgt-mode-hint" style="margin:8px -13px -10px;border-radius:0 0 var(--rl) var(--rl)">Tap the target to mark each bullet impact</div>
+        </div>
+        <div class="card">
+          <div class="tgt-canvas-wrap" id="tgt-canvas-wrap">
+            <canvas id="tgt-canvas"></canvas>
+          </div>
+          <div style="padding:8px 13px">
+            <div class="tgt-legend">
+              <div class="tgt-leg-item"><div class="tgt-leg-dot" style="background:#E05252"></div>Impact (POI)</div>
+              <div class="tgt-leg-item"><div class="tgt-leg-dot" style="background:#4CAF72"></div>Point of Aim</div>
+              <div class="tgt-leg-item"><div class="tgt-leg-dot" style="background:rgba(200,149,90,0.7);border-radius:0"></div>Calibration</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Scale calibration</div></div>
+          <div style="padding:11px 13px;display:flex;flex-direction:column;gap:9px">
+            <div class="tgt-scale-row">
+              <label>Target size</label>
+              <select class="tgt-scale-sel" id="tgt-preset" onchange="tgtPresetChange()">
+                <option value="">Custom</option>
+                <option value="1" selected>1&quot; square</option>
+                <option value="2">2&quot; square</option>
+                <option value="3">3&quot; Shoot-N-C</option>
+                <option value="8">8&quot; paper plate</option>
+                <option value="12">12&quot; IPSC A-zone</option>
+              </select>
+              <input class="tgt-scale-inp" type="number" id="tgt-scale-in" value="1" step="0.25" min="0.1" oninput="tgtRedraw();tgtUpdateStats()">
+              <label>in</label>
+            </div>
+            <div class="tgt-scale-row">
+              <label>Distance</label>
+              <select class="tgt-scale-sel" id="tgt-dist-sel" onchange="tgtUpdateStats()">
+                <option>100</option><option>200</option><option>300</option><option>400</option><option>500</option>
+                <option>600</option><option>700</option><option>800</option><option>900</option><option>1000</option>
+              </select>
+              <label>yds</label>
+            </div>
+            <div style="background:var(--bg3);border:1px solid var(--bd2);border-radius:var(--r);padding:8px 11px;font-size:11px;color:var(--t2)">
+              📏 Tap two points on a known reference to set scale
+              <div style="display:flex;gap:7px;margin-top:7px">
+                <button class="tgt-tool-btn" onclick="tgtSetMode('cal1')" id="tbt-cal1">Set point A</button>
+                <button class="tgt-tool-btn" onclick="tgtSetMode('cal2')" id="tbt-cal2">Set point B</button>
+                <button class="tgt-tool-btn" onclick="tgtClearCal()">Reset</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card" id="tgt-stats-card" style="display:none">
+          <div class="card-head"><div class="card-title">Group analysis</div><div id="tgt-shot-count" style="font-size:11px;color:var(--t3)">0 shots</div></div>
+          <div class="tgt-stats-grid">
+            <div class="tg-stat"><div class="tg-val" id="tg-es">—</div><div class="tg-lbl">ES (in)</div></div>
+            <div class="tg-stat"><div class="tg-val" id="tg-moa">—</div><div class="tg-lbl">ES (MOA)</div></div>
+            <div class="tg-stat"><div class="tg-val" id="tg-sd">—</div><div class="tg-lbl">Mean radius</div></div>
+          </div>
+          <div style="padding:9px 13px;display:flex;gap:16px;flex-wrap:wrap">
+            <div style="font-size:11px;color:var(--t2)">POI offset: <span id="tg-poi-offset" style="color:var(--ac);font-family:monospace">—</span></div>
+            <div style="font-size:11px;color:var(--t2)">H spread: <span id="tg-hspread" style="color:var(--ac);font-family:monospace">—</span></div>
+            <div style="font-size:11px;color:var(--t2)">V spread: <span id="tg-vspread" style="color:var(--ac);font-family:monospace">—</span></div>
+          </div>
+          <div class="card-head"><div class="card-title">Impacts</div></div>
+          <div id="tgt-shot-list"></div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <select class="tgt-snap-sel" id="tgt-rifle-snap" style="flex:1"><option value="">Select rifle…</option></select>
+          <button class="bpri" onclick="tgtSaveToLog()">Save to log</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /scroll -->
+</div><!-- /app -->
+
+<!-- ADD RIFLE MODAL -->
+<div class="modal-bg" id="addmodal">
+  <div class="modal" style="max-height:88vh;overflow-y:auto">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title">Add rifle</div>
+
+    <!-- SECTION: Rifle ID -->
+    <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px">Rifle identity</div>
+    <div class="modal-grid">
+      <div class="mf">
+        <label>Brand</label>
+        <select id="m-brand" onchange="onBrandChange()">
+          <option value="">— Brand —</option>
+        </select>
+      </div>
+      <div class="mf">
+        <label>Model</label>
+        <select id="m-model" onchange="onModelChange()">
+          <option value="">— Model —</option>
+        </select>
+      </div>
+      <div class="mf">
+        <label>Cartridge</label>
+        <select id="m-cart" onchange="autoFillName()">
+          <option value="">— Cartridge —</option>
+        </select>
+      </div>
+      <div class="mf">
+        <label>Barrel length</label>
+        <select id="m-barrel" onchange="autoFillName()">
+          <option value="">— Barrel —</option>
+        </select>
+      </div>
+      <div class="mf">
+        <label>Twist rate</label>
+        <input id="m-twist" placeholder='e.g. 1:8"'>
+      </div>
+      <div class="mf">
+        <label>Stock / chassis</label>
+        <input id="m-stock" placeholder="e.g. McMillan A5">
+      </div>
+      <div class="mf" style="grid-column:1/-1">
+        <label>Scope / optic</label>
+        <input id="m-scope" placeholder="e.g. Nightforce ATACR 5-25×56 F1">
+      </div>
+      <div class="mf" style="grid-column:1/-1">
+        <label>Profile name <span style="color:var(--t3);font-size:9px">(auto-fills from above)</span></label>
+        <input id="mn" placeholder="e.g. Remington 700 6.5 CM 24&quot;">
+      </div>
+    </div>
+
+    <!-- SECTION: Bullet library -->
+    <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin:10px 0 4px">Bullet library</div>
+    <div class="modal-grid">
+      <div class="mf">
+        <label>Bullet caliber</label>
+        <select id="m-bcal" onchange="onBulletCalChange()">
+          <option value="">— Caliber —</option>
+        </select>
+      </div>
+      <div class="mf">
+        <label>Manufacturer</label>
+        <select id="m-bmfr" onchange="onBulletMfrChange()">
+          <option value="">— Manufacturer —</option>
+        </select>
+      </div>
+      <div class="mf" style="grid-column:1/-1">
+        <label>Bullet</label>
+        <select id="m-bbul" onchange="onBulletSelect()">
+          <option value="">— Select bullet to auto-fill —</option>
+        </select>
+      </div>
+    </div>
+    <div id="bullet-info" style="display:none;font-size:11px;color:var(--t2);background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);padding:8px 11px;margin-top:4px;line-height:1.5"></div>
+
+    <!-- SECTION: Ballistic data (auto-filled or manual) -->
+    <div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin:10px 0 4px">Ballistic data</div>
+    <div class="modal-grid">
+      <div class="mf">
+        <label>Bullet wt (gr)</label>
+        <input id="mbw" type="number" inputmode="decimal" placeholder="175">
+      </div>
+      <div class="mf">
+        <label>BC type</label>
+        <select id="mbt"><option>G7</option><option>G1</option></select>
+      </div>
+      <div class="mf">
+        <label>BC value</label>
+        <input id="mb" type="number" step=".001" inputmode="decimal" placeholder="0.308">
+      </div>
+      <div class="mf">
+        <label>Muzzle vel (fps)</label>
+        <input id="mmv" type="number" inputmode="decimal" placeholder="2600">
+      </div>
+      <div class="mf">
+        <label>Zero dist (yds)</label>
+        <input id="mz" type="number" inputmode="decimal" placeholder="100">
+      </div>
+      <div class="mf">
+        <label>Scope height (in)</label>
+        <input id="msh" type="number" step=".1" inputmode="decimal" placeholder="1.5">
+      </div>
+      <div class="mf" style="grid-column:1/-1">
+        <label>Caliber (manual override)</label>
+        <input id="mc" placeholder="e.g. .308 Win">
+      </div>
+    </div>
+
+    <!-- SECTION: Notes -->
+    <div class="mf" style="margin-top:4px">
+      <label>Notes</label>
+      <textarea id="mnt" placeholder="Load data, cold bore tendencies, scope turret info&#8230;" style="min-height:52px"></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeAdd()">Cancel</button>
+      <button class="btn-save" id="modal-save-btn" onclick="saveRifle()">Save rifle</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+var rifles=[],shots=[],aIdx=0,wxSnap=null,windDeg=90,angleDeg=0,unit='moa',truedMV=null,coldBore={e:0,w:0};
+try{rifles=JSON.parse(localStorage.getItem('dope_r')||'[]')}catch(e){}
+try{shots=JSON.parse(localStorage.getItem('dope_s')||'[]')}catch(e){}
+try{coldBore=JSON.parse(localStorage.getItem('dope_cb')||'{"e":0,"w":0}')}catch(e){}
+if(!rifles.length){rifles=[{name:'Rem 700 .308',cal:'.308 Win',bw:175,bt:'G7',bc:0.308,mv:2600,z:100,sh:1.5,notes:''},{name:'Tikka T3 6.5 CM',cal:'6.5 Creedmoor',bw:140,bt:'G7',bc:0.315,mv:2710,z:100,sh:1.5,notes:''}];sv();}
+function sv(){try{localStorage.setItem('dope_r',JSON.stringify(rifles))}catch(e){}try{localStorage.setItem('dope_s',JSON.stringify(shots))}catch(e){}try{localStorage.setItem('dope_cb',JSON.stringify(coldBore))}catch(e){}}
+function setUnit(u){unit=u;document.getElementById('ubtn-moa').className='unit-btn'+(u==='moa'?' on':'');document.getElementById('ubtn-mrad').className='unit-btn'+(u==='mrad'?' on':'');document.getElementById('active-unit-lbl').textContent=u.toUpperCase();document.getElementById('dope-h1').textContent=u==='moa'?'Elev MOA':'Elev MRAD';document.getElementById('dope-h2').textContent=u==='moa'?'Elev MRAD':'Elev MOA';calc();buildDope();}
+(function(){var g=document.getElementById('clock-ticks');for(var i=0;i<72;i++){var deg=i*5,rad=deg*Math.PI/180;var isMaj=(deg%45===0),isMed=(deg%15===0&&!isMaj);var r1=isMaj?72:isMed?76:80,r2=88;var x1=100+r1*Math.sin(rad),y1=100-r1*Math.cos(rad);var x2=100+r2*Math.sin(rad),y2=100-r2*Math.cos(rad);var ln=document.createElementNS('http://www.w3.org/2000/svg','line');ln.setAttribute('x1',x1);ln.setAttribute('y1',y1);ln.setAttribute('x2',x2);ln.setAttribute('y2',y2);ln.setAttribute('class',isMaj?'clock-tick-maj':'clock-tick');g.appendChild(ln);}})();
+function setWindDeg(d){d=((d%360)+360)%360;windDeg=d;document.getElementById('needle-group').setAttribute('transform','rotate('+d+',100,100)');document.getElementById('deg-text').textContent=('000'+Math.round(d)).slice(-3)+'°';document.getElementById('wind-dir-txt').textContent=Math.round(d)+'°';document.getElementById('wind-card-txt').textContent=degToCard(d);document.getElementById('wwdir-wx').value=Math.round(d);calc();}
+function degToCard(d){return['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'][Math.round(d/22.5)%16]}
+var cw=document.getElementById('clock-wrap'),dragging=false;
+function getAngle(e,el){var r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;var px=e.touches?e.touches[0].clientX:e.clientX,py=e.touches?e.touches[0].clientY:e.clientY;return(((Math.atan2(px-cx,-(py-cy))*180/Math.PI)%360)+360)%360;}
+cw.addEventListener('touchstart',function(e){e.preventDefault();dragging=true;setWindDeg(getAngle(e,cw));},{passive:false});
+cw.addEventListener('touchmove',function(e){e.preventDefault();if(dragging)setWindDeg(getAngle(e,cw));},{passive:false});
+cw.addEventListener('touchend',function(){dragging=false});
+cw.addEventListener('mousedown',function(e){dragging=true;setWindDeg(getAngle(e,cw))});
+window.addEventListener('mousemove',function(e){if(dragging)setWindDeg(getAngle(e,cw))});
+window.addEventListener('mouseup',function(){dragging=false});
+function syncWindDir(){setWindDeg(parseFloat(document.getElementById('wwdir-wx').value)||0)}
+function syncWind(){document.getElementById('wspeed').value=document.getElementById('wwind-wx').value||0;calc()}
+function onAngle(v){angleDeg=parseInt(v);document.getElementById('angle-disp').textContent=(angleDeg>0?'+':'')+angleDeg+'°';calc();}
+function cosineCorr(yds,angleDeg){var rad=angleDeg*Math.PI/180;return yds*Math.cos(rad);}
+function showTab(id,btn){document.querySelectorAll('.pnl').forEach(function(p){p.classList.remove('on')});document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on')});document.getElementById('pnl-'+id).classList.add('on');btn.classList.add('on');if(id==='dope')buildDope();if(id==='log')renderLog();if(id==='gear')renderGear();if(id==='sess')buildSess();if(id==='true')updTruePred();
+  if(id==='groups'){populateTgtRifles();if(tgtCanvas&&tgtImg)tgtRedraw();}}
+function renderChips(){var c=document.getElementById('chips');c.innerHTML='';rifles.forEach(function(r,i){var ch=document.createElement('button');ch.className='chip'+(i===aIdx?' on':'');ch.textContent=r.name;ch.onclick=function(){aIdx=i;renderChips();calc();buildDope();updTruePred();};c.appendChild(ch);});updateActiveStrip();}
+function updateActiveStrip(){var strip=document.getElementById('active-strip');if(!rifles.length){strip.innerHTML='<div style="font-size:12px;color:var(--t3)">No rifle — add one above</div>';return;}var r=rifles[aIdx];strip.innerHTML='<div style="display:flex;align-items:center;gap:8px;min-width:0"><div class="active-dot"></div><div class="active-rifle-label">'+r.name+'</div></div><div class="active-stats"><div class="astat"><div class="astat-val">'+r.cal+'</div><div class="astat-lbl">Cal</div></div><div class="astat"><div class="astat-val">'+r.bw+'<span style="font-size:9px;color:var(--t3)">gr</span></div><div class="astat-lbl">Bullet</div></div><div class="astat"><div class="astat-val">'+r.bt+' '+r.bc+'</div><div class="astat-lbl">BC</div></div><div class="astat"><div class="astat-val">'+r.mv+'<span style="font-size:9px;color:var(--t3)">fps</span></div><div class="astat-lbl">MV</div></div></div>';}
+function getNetDrop(yds,r,cdf){cdf=cdf||1;var t=yds/(r.mv*0.3048*(1-0.18*yds/1000));var d=0.5*32.174*t*t*12;var t0=r.z/(r.mv*0.3048*(1-0.18*r.z/1000));var d0=0.5*32.174*t0*t0*12;return d-d0-(r.sh*(yds-r.z)/r.z);}
+function fmt(moa,decimals){decimals=decimals||2;if(unit==='moa')return(+moa).toFixed(decimals);return(+(moa/3.438)).toFixed(decimals);}
+function fmtAlt(moa){if(unit==='moa')return(+(moa/3.438)).toFixed(2)+' MRAD';return(+moa).toFixed(2)+' MOA';}
+function unitLabel(){return unit==='moa'?'MOA':'MRAD'}
+function calc(){var dist=parseFloat(document.getElementById('dslider').value)||500;document.getElementById('ddsp').innerHTML=dist+'<span>yds</span>';if(!rifles.length)return;var r=rifles[aIdx];var tF=parseFloat(document.getElementById('wtemp').value)||59;var pr=parseFloat(document.getElementById('wpres').value)||29.92;var hm=parseFloat(document.getElementById('whumid').value)||50;var ws=parseFloat(document.getElementById('wspeed').value)||0;var tR=tF+459.67;var svp=Math.exp(1.8096678-(2354.731/tR))*0.0393701;var pv=hm/100*svp;var cdf=(0.0765*(pr-pv)+0.0612*pv)/(29.92*0.0765);var horizDist=cosineCorr(dist,angleDeg);var net=getNetDrop(horizDist,r,cdf);document.getElementById('angle-corr').textContent=angleDeg!==0?'Horiz equiv: '+Math.round(horizDist)+' yds':'Flat fire';var eMOA=+Math.max(0,(net/horizDist)*100*1.047).toFixed(2);var cross=Math.abs(Math.sin(windDeg*Math.PI/180))*ws;var tof=horizDist/(r.mv*0.85);var drift=cross*tof*1.467*tof*0.5;var wMOA=+((drift/horizDist)*100*1.047).toFixed(2);var note=(document.getElementById('lnote').value||'').toLowerCase();var isCold=note.indexOf('cold')>=0;var cbE=isCold?coldBore.e:0;var cbW=isCold?coldBore.w:0;var eMOAadj=+(eMOA+cbE).toFixed(2);var wMOAadj=+(wMOA+cbW).toFixed(2);document.getElementById('cb-elev-badge').style.display=isCold&&coldBore.e?'inline-block':'none';var iv=r.mv*Math.exp(-0.00012*horizDist/r.bc);var egy=Math.round(iv*iv*r.bw/450437);document.getElementById('selev').textContent=fmt(eMOAadj);document.getElementById('selev-unit').textContent=unitLabel();document.getElementById('selevalt').textContent=fmtAlt(eMOAadj);document.getElementById('swind').textContent=fmt(wMOAadj);document.getElementById('swind-unit').textContent=unitLabel();document.getElementById('swindalt').textContent=fmtAlt(wMOAadj);document.getElementById('sdrop').textContent=Math.round(net);document.getElementById('stof').textContent=(horizDist/(r.mv*0.88)).toFixed(2);document.getElementById('svel').textContent=Math.round(iv);document.getElementById('segy').textContent=egy;var fv=Math.round(Math.abs(Math.sin(windDeg*Math.PI/180))*ws);document.getElementById('fv-text').textContent=fv+' mph';document.getElementById('rifle-note').textContent=r.name+' · '+r.bt+' BC '+r.bc+' · MV '+r.mv+' fps · zero '+r.z+' yds'+(isCold&&coldBore.e?' · cold bore adj':'');updDA();}
+function onDist(v){calc();hiDope(parseInt(v))}
+function updDA(){var tF=parseFloat(document.getElementById('wtemp').value)||59;var pr=parseFloat(document.getElementById('wpres').value)||29.92;var hm=parseFloat(document.getElementById('whumid').value)||50;var ws=parseFloat(document.getElementById('wspeed').value)||0;var alt=parseFloat(document.getElementById('walt').value)||0;var tC=(tF-32)/1.8,tK=tC+273.15;var da=Math.round(alt+145366*(1-Math.pow(17.326*pr/(459.67+tF),0.235)));var snd=Math.round(49.0223*Math.sqrt(tK));var vc=Math.max(0,Math.round((1-da/20000)*100));var fv=Math.round(Math.abs(Math.sin(windDeg*Math.PI/180))*ws);document.getElementById('wda').textContent=da;document.getElementById('wsv').textContent=snd;document.getElementById('wvc').textContent=vc+'%';document.getElementById('wfv').textContent=fv;var pct=Math.min(100,Math.max(0,(da+2000)/22000*100));document.getElementById('dafl').style.width=pct+'%';document.getElementById('danote').textContent='DA '+da+' ft — '+(da<0?'below SL, MV boost':da<3000?'near standard':da<6000?'moderate DA':'high DA — MV reduced');wxSnap={tF:tF,pr:pr,hm:hm,ws:ws,wd:windDeg,da:da,snd:snd};}
+function setStd(){document.getElementById('wtemp').value=59;document.getElementById('whumid').value=50;document.getElementById('wpres').value=29.92;document.getElementById('walt').value=0;document.getElementById('wspeed').value=0;document.getElementById('wwind-wx').value=0;setWindDeg(90);updDA();}
+function clrWx(){['wtemp','whumid','wpres','walt','wspeed','wwind-wx'].forEach(function(id){document.getElementById(id).value=''})}
+function buildDope(){if(!rifles.length)return;var r=rifles[aIdx];document.getElementById('dope-lbl').textContent=r.name;var tb=document.getElementById('dopebody');tb.innerHTML='';var cur=parseInt(document.getElementById('dslider').value)||500;var angle=angleDeg;[100,200,300,400,500,600,700,800,900,1000].forEach(function(y){var hy=cosineCorr(y,angle);var net=getNetDrop(hy,r,1);var moa=+Math.max(0,(net/hy)*100*1.047).toFixed(2);var mrad=+(moa/3.438).toFixed(2);var tof=(hy/(r.mv*0.85)).toFixed(2);var tr=document.createElement('tr');if(Math.abs(y-cur)<15)tr.className='ar';var c1=unit==='moa'?moa:mrad,c2=unit==='moa'?mrad:moa;tr.innerHTML='<td>'+y+(angle!==0?'<span style="font-size:9px;color:var(--t3)"> →'+Math.round(hy)+'</span>':'')+'</td><td>'+c1+'</td><td>'+c2+'</td><td>'+Math.round(net)+'</td><td>'+tof+'</td>';tb.appendChild(tr);});}
+function hiDope(d){var ranges=[100,200,300,400,500,600,700,800,900,1000];document.querySelectorAll('.dt tbody tr').forEach(function(tr,i){tr.className=Math.abs(ranges[i]-d)<15?'ar':''});}
+function logShot(){if(!rifles.length){alert('Add a rifle first.');return;}var r=rifles[aIdx];var dist=parseInt(document.getElementById('dslider').value);var res=document.getElementById('lres').value;var note=document.getElementById('lnote').value.trim();var elev=document.getElementById('selev').textContent;var wind=document.getElementById('swind').textContent;var da=(document.getElementById('wda').textContent||'').replace(/[^\d\-]/g,'');var ang=angleDeg!==0?angleDeg+'°':'—';var ts=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});shots.unshift({rifle:r.name,dist:dist,elev:elev,wind:wind,da:da,angle:ang,result:res,note:note,ts:ts,unit:unit});sv();renderLog();document.getElementById('lnote').value='';calc();}
+function renderLog(){var body=document.getElementById('logbody');var empty=document.getElementById('log-empty');var tbl=document.getElementById('logtbl');if(!shots.length){empty.style.display='block';tbl.style.display='none';return;}empty.style.display='none';tbl.style.display='table';body.innerHTML='';shots.slice(0,60).forEach(function(s){var h=s.result==='Hit';body.innerHTML+='<tr><td>'+s.rifle+'</td><td>'+s.dist+'y</td><td>'+s.elev+(s.unit?'<span style="font-size:9px;color:var(--t3)"> '+s.unit+'</span>':'')+'</td><td>'+s.wind+'</td><td style="color:var(--t3)">'+(s.angle||'—')+'</td><td>'+s.da+'</td><td class="'+(h?'hit-cell':'miss-cell')+'">'+s.result+'</td><td style="color:var(--t3)">'+(s.note||'—')+'</td></tr>';});}
+function clrLog(){if(confirm('Clear all shots?')){shots=[];sv();renderLog()}}
+function updTruePred(){if(!rifles.length)return;var r=rifles[aIdx];var dist=parseFloat(document.getElementById('tr-dist').value)||500;var net=getNetDrop(dist,r,1);var moa=+Math.max(0,(net/dist)*100*1.047).toFixed(2);document.getElementById('tr-pred').value=unit==='moa'?moa+' MOA':(moa/3.438).toFixed(2)+' MRAD';document.getElementById('tr-mv-show').value=r.mv+' fps';}
+function calcTrue(){if(!rifles.length)return;var r=rifles[aIdx];var dist=parseFloat(document.getElementById('tr-dist').value)||500;var obsRaw=parseFloat(document.getElementById('tr-obs').value);if(isNaN(obsRaw)){alert('Enter observed elevation first.');return;}var obsMOA=unit==='mrad'?obsRaw*3.438:obsRaw;var predMOA=parseFloat(document.getElementById('tr-pred').value)||0;var predNet=getNetDrop(dist,r,1);var obsNet=(obsMOA/100/1.047)*dist;var ratio=Math.sqrt(Math.abs(obsNet/predNet));var trueV=Math.round(r.mv*ratio);var delta=trueV-r.mv;truedMV=trueV;document.getElementById('true-mv-result').textContent=trueV;document.getElementById('true-mv-delta').textContent=(delta>=0?'+':'')+delta+' fps';document.getElementById('true-result').style.display='block';}
+function applyTruing(){if(truedMV===null||!rifles.length)return;if(!confirm('Apply '+truedMV+' fps as MV for '+rifles[aIdx].name+'?'))return;rifles[aIdx].mv=truedMV;sv();renderChips();calc();buildDope();updTruePred();document.getElementById('true-result').style.display='none';truedMV=null;alert('Applied. Recalculating…');}
+function saveColdBore(){var e=parseFloat(document.getElementById('cb-elev-inp').value)||0;var w=parseFloat(document.getElementById('cb-wind-inp').value)||0;coldBore={e:e,w:w};sv();document.getElementById('cb-saved').style.display='block';setTimeout(function(){document.getElementById('cb-saved').style.display='none'},3000);}
+function buildSess(){var total=shots.length,hits=shots.filter(function(s){return s.result==='Hit'}).length;var pct=total?Math.round(hits/total*100):0;var maxd=total?Math.max.apply(null,shots.map(function(s){return s.dist})):0;var ru=[...new Set(shots.map(function(s){return s.rifle}))];document.getElementById('shero').innerHTML=ss(total,'Shots','')+ss(hits,'Hits',(total-hits)+' miss')+ss(pct+'%','Hit rate','')+ss(maxd||'—','Max dist','')+ss(ru.length,'Rifles','');document.getElementById('shitpct').textContent=pct+'%';document.getElementById('hitfill').style.width=pct+'%';var bk={'100–300':0,'400–600':0,'700–900':0,'1000+':0};shots.forEach(function(s){if(s.dist<=300)bk['100–300']++;else if(s.dist<=600)bk['400–600']++;else if(s.dist<=900)bk['700–900']++;else bk['1000+']++});var mx=Math.max.apply(null,Object.values(bk).concat(1));var db=document.getElementById('distbk');db.innerHTML='';Object.entries(bk).forEach(function(e){if(!e[1])return;db.innerHTML+='<div class="dbrow"><div class="dblbl">'+e[0]+'y</div><div class="dbtrack"><div class="dbfill" style="width:'+Math.round(e[1]/mx*100)+'%"></div></div><div class="dbct">'+e[1]+'</div></div>'});if(!total)db.innerHTML='<div class="empty-state" style="padding:10px 0">No shots logged.</div>';var rb=document.getElementById('riflebk');rb.innerHTML='';ru.forEach(function(rn){var ss2=shots.filter(function(s){return s.rifle===rn});var rh=ss2.filter(function(s){return s.result==='Hit'}).length;var rp=Math.round(rh/ss2.length*100);var rd=ss2.map(function(s){return s.dist});var col=rp>=75?'var(--ok)':rp>=50?'var(--ac)':'var(--no)';rb.innerHTML+='<div class="rb-card"><div><div class="rb-name">'+rn+'</div><div class="rb-sub">'+ss2.length+' shots · '+Math.min.apply(null,rd)+'–'+Math.max.apply(null,rd)+' yds</div></div><div><div class="rb-pct" style="color:'+col+'">'+rp+'%</div><div class="rb-sub2">'+rh+'/'+ss2.length+'</div></div></div>';});if(!ru.length)rb.innerHTML='<div style="padding:8px 0;font-size:12px;color:var(--t3)">No shots yet.</div>';var wx=wxSnap||{};document.getElementById('sesswx').innerHTML=wsnap(wx.tF?wx.tF+'°F':'—','Temp')+wsnap(wx.hm?wx.hm+'%':'—','Humid')+wsnap(wx.pr?wx.pr+' inHg':'—','Pres')+wsnap(wx.ws?wx.ws+' mph':'—','Wind')+wsnap(wx.da?wx.da+' ft':'—','DA')+wsnap(wx.snd?wx.snd+' fps':'—','Sound');}
+function ss(v,l,s){return'<div class="sstat"><div class="snum2">'+v+'</div><div class="slbl2">'+l+'</div>'+(s?'<div class="ssub">'+s+'</div>':'')+'</div>'}
+function wsnap(v,l){return'<div class="wx-snap-cell"><div class="wx-snap-val">'+v+'</div><div class="wx-snap-lbl">'+l+'</div></div>'}
+function renderGear(){
+  var c=document.getElementById('rifle-cards');c.innerHTML='';
+  if(!rifles.length){c.innerHTML='<div class="empty-state">No rifles added.</div>';return;}
+  rifles.forEach(function(r,i){
+    var d=document.createElement('div');d.className='card';d.style.marginBottom='10px';
+    var specs='<div class="rifle-card-specs">';
+    if(r.brand||r.model) specs+='<div class="rcs" style="grid-column:1/-1"><div class="rcs-val" style="font-size:11px">'+(r.brand||'')+(r.brand&&r.model?' ':'')+(r.model||'')+'</div><div class="rcs-lbl">Make / Model</div></div>';
+    specs+='<div class="rcs"><div class="rcs-val">'+r.cal+'</div><div class="rcs-lbl">Cartridge</div></div>';
+    if(r.barrel) specs+='<div class="rcs"><div class="rcs-val">'+r.barrel+'</div><div class="rcs-lbl">Barrel</div></div>';
+    if(r.twist)  specs+='<div class="rcs"><div class="rcs-val">'+r.twist+'</div><div class="rcs-lbl">Twist</div></div>';
+    specs+='<div class="rcs"><div class="rcs-val">'+r.bw+'gr</div><div class="rcs-lbl">Bullet</div></div>';
+    specs+='<div class="rcs"><div class="rcs-val">'+r.bt+' '+r.bc+'</div><div class="rcs-lbl">BC</div></div>';
+    specs+='<div class="rcs"><div class="rcs-val">'+r.mv+' fps</div><div class="rcs-lbl">MV</div></div>';
+    specs+='<div class="rcs"><div class="rcs-val">'+r.z+' yds</div><div class="rcs-lbl">Zero</div></div>';
+    specs+='<div class="rcs"><div class="rcs-val">'+r.sh+'"</div><div class="rcs-lbl">Scope ht</div></div>';
+    if(r.scope)  specs+='<div class="rcs" style="grid-column:1/-1"><div class="rcs-val" style="font-size:11px">'+r.scope+'</div><div class="rcs-lbl">Scope / Optic</div></div>';
+    if(r.stock)  specs+='<div class="rcs" style="grid-column:1/-1"><div class="rcs-val" style="font-size:11px">'+r.stock+'</div><div class="rcs-lbl">Stock / Chassis</div></div>';
+    specs+='</div>';
+    d.innerHTML='<div class="card-head"><div class="card-head-row"><div style="font-size:14px;font-weight:600">'+r.name+'</div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="btn-edit" onclick="openEdit('+i+')">Edit</button>'
+      +'<button class="btn-remove" onclick="delRifle('+i+')">Remove</button>'
+      +'</div></div></div>'
+      +specs
+      +(r.notes?'<div class="rifle-notes-field"><div style="font-size:9px;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:5px">Notes</div><div style="font-size:12px;color:var(--t2);line-height:1.5">'+r.notes+'</div></div>':'');
+    c.appendChild(d);
+  });
+}
+function delRifle(i){if(!confirm('Remove '+rifles[i].name+'?'))return;rifles.splice(i,1);if(aIdx>=rifles.length)aIdx=Math.max(0,rifles.length-1);sv();renderChips();calc();buildDope();renderGear();}
+function exportPDF(){var btn=document.getElementById('expbtn');if(typeof window.jspdf==='undefined'){btn.textContent='Loading…';setTimeout(exportPDF,900);return;}btn.disabled=true;btn.textContent='Generating…';var jsPDF=window.jspdf.jsPDF;var doc=new jsPDF({orientation:'portrait',unit:'mm',format:'letter'});var W=215.9,M=15,CW=W-M*2;var AC=[200,149,90],DK=[28,28,28],MD=[100,105,110],LT=[155,160,165],FL=[245,244,242],RU=[215,215,215],OK=[60,185,100],NO=[210,70,70];var today=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});var total=shots.length,hits=shots.filter(function(s){return s.result==='Hit'}).length;var pct=total?Math.round(hits/total*100):0;var wx=wxSnap||{},notes=(document.getElementById('sessnotes').value||'').trim(),rifle=rifles.length?rifles[aIdx]:null,y=M;doc.setFillColor.apply(doc,AC);doc.rect(0,0,W,20,'F');doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text('Long Range — Session Report',M,12.5);doc.setFont('helvetica','normal');doc.setFontSize(9);doc.text(today,W-M,12.5,{align:'right'});y=28;var cols=[[String(total),'Shots'],[String(hits),'Hits'],[String(total-hits),'Misses'],[pct+'%','Hit rate'],[(wx.tF||'—')+'°F','Temp'],[(wx.ws||'—')+' mph','Wind'],[unit.toUpperCase(),'Units']];var cw=CW/cols.length;cols.forEach(function(c,i){var x=M+i*cw;doc.setFillColor.apply(doc,FL);doc.roundedRect(x,y,cw-2,16,2,2,'F');doc.setFont('helvetica','bold');doc.setFontSize(12);doc.setTextColor.apply(doc,AC);doc.text(String(c[0]),x+cw/2-1,y+8,{align:'center'});doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor.apply(doc,LT);doc.text(c[1],x+cw/2-1,y+13,{align:'center'});});y+=22;doc.setFont('helvetica','normal');doc.setFontSize(8);doc.setTextColor.apply(doc,MD);doc.text('Hit rate',M,y+4);doc.setFillColor.apply(doc,RU);doc.roundedRect(M+22,y,CW-22,4,1,1,'F');doc.setFillColor.apply(doc,OK);doc.roundedRect(M+22,y,Math.max(2,(CW-22)*pct/100),4,1,1,'F');doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor.apply(doc,AC);doc.text(pct+'%',W-M,y+4,{align:'right'});y+=12;function shead(t){if(y>252){doc.addPage();y=M;}doc.setDrawColor.apply(doc,RU);doc.setLineWidth(.25);doc.line(M,y,W-M,y);y+=5;doc.setFont('helvetica','bold');doc.setFontSize(8);doc.setTextColor.apply(doc,AC);doc.text(t.toUpperCase(),M,y);y+=5;}shead('Shot log');var cws=[28,18,20,20,14,17,30,29],hdrs=['Rifle','Dist','Elev','Wind','Angle','DA','Result','Notes'];doc.setFillColor.apply(doc,FL);doc.rect(M,y-1.5,CW,7,'F');hdrs.forEach(function(h,i){var x=M+cws.slice(0,i).reduce(function(a,b){return a+b;},0);doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor.apply(doc,MD);doc.text(h,x+1,y+3.8);});y+=8;shots.slice(0,30).forEach(function(s,idx){if(y>256){doc.addPage();y=M;}var h=s.result==='Hit';if(idx%2===0){doc.setFillColor(250,249,247);doc.rect(M,y-1.5,CW,6,'F');}[s.rifle.slice(0,14),s.dist+'y',s.elev,s.wind,(s.angle||'—'),s.da+' ft',s.result,(s.note||'—').slice(0,16)].forEach(function(v,i){var x=M+cws.slice(0,i).reduce(function(a,b){return a+b;},0);doc.setFont('helvetica',i===6?'bold':'normal');doc.setFontSize(7);doc.setTextColor.apply(doc,i===6?(h?OK:NO):DK);doc.text(String(v),x+1,y+3.2);});y+=6;});if(shots.length>30){doc.setFont('helvetica','italic');doc.setFontSize(7);doc.setTextColor.apply(doc,LT);doc.text('…and '+(shots.length-30)+' more',M,y+4);y+=8;}y+=4;shead('Per-rifle');var ru=[...new Set(shots.map(function(s){return s.rifle}))];ru.forEach(function(rn){if(y>262){doc.addPage();y=M;}var ss2=shots.filter(function(s){return s.rifle===rn});var rh=ss2.filter(function(s){return s.result==='Hit'}).length;var rp=Math.round(rh/ss2.length*100);var rd=ss2.map(function(s){return s.dist});doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor.apply(doc,DK);doc.text(rn,M,y);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor.apply(doc,LT);doc.text(ss2.length+' shots · '+Math.min.apply(null,rd)+'–'+Math.max.apply(null,rd)+' yds',M+52,y);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.setTextColor.apply(doc,rp>=75?OK:rp>=50?AC:NO);doc.text(rp+'% ('+rh+'/'+ss2.length+')',W-M,y,{align:'right'});y+=7;});y+=4;shead('Conditions');var wxi=[['Temperature',(wx.tF||'—')+'°F'],['Humidity',(wx.hm||'—')+'%'],['Pressure',(wx.pr||'—')+' inHg'],['Wind',(wx.ws||'—')+' mph @ '+degToCard(wx.wd||0)],['Density alt.',(wx.da||'—')+' ft'],['Sound',(wx.snd||'—')+' fps'],['Angle',angleDeg!==0?angleDeg+'°':'Flat'],['Units',unit.toUpperCase()]];var wcw=CW/4;wxi.forEach(function(w,i){var col=i%4,row=Math.floor(i/4),x=M+col*wcw,ry=y+row*11;doc.setFont('helvetica','bold');doc.setFontSize(9);doc.setTextColor.apply(doc,DK);doc.text(w[1],x,ry);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor.apply(doc,LT);doc.text(w[0],x,ry+4.5);});y+=24;if(rifle&&y<230){if(y>200){doc.addPage();y=M;}shead('Dope card — '+rifle.name+(angleDeg!==0?' @ '+angleDeg+'°':''));doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor.apply(doc,LT);doc.text(rifle.cal+' · '+rifle.bw+'gr · '+rifle.bt+' BC '+rifle.bc+' · MV '+rifle.mv+' fps · zero '+rifle.z+' yds',M,y);y+=6;var dh=['Dist','Slope dist',unit==='moa'?'Elev MOA':'Elev MRAD',unit==='moa'?'Elev MRAD':'Elev MOA','Drop in','TOF s'],dw=[24,22,26,26,24,18];doc.setFillColor.apply(doc,FL);doc.rect(M,y-1.5,CW,7,'F');dh.forEach(function(h,i){doc.setFont('helvetica','bold');doc.setFontSize(7);doc.setTextColor.apply(doc,MD);doc.text(h,M+dw.slice(0,i).reduce(function(a,b){return a+b;},0)+1,y+3.8);});y+=8;[100,200,300,400,500,600,700,800,900,1000].forEach(function(yd,idx){if(y>265){doc.addPage();y=M;}var hy=cosineCorr(yd,angleDeg);var net=getNetDrop(hy,rifle,1);var moa=+Math.max(0,(net/hy)*100*1.047).toFixed(2);var mrad=+(moa/3.438).toFixed(2);var tof=(hy/(rifle.mv*0.85)).toFixed(2);if(idx%2===0){doc.setFillColor(250,249,247);doc.rect(M,y-1.5,CW,6,'F');}[String(yd),Math.round(hy)+'y',unit==='moa'?String(moa):String(mrad),unit==='moa'?String(mrad):String(moa),String(Math.round(net)),String(tof)].forEach(function(v,i){doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor.apply(doc,DK);doc.text(v,M+dw.slice(0,i).reduce(function(a,b){return a+b;},0)+1,y+3.2);});y+=6;});y+=5;}if(notes){if(y>242){doc.addPage();y=M;}shead('Session notes');doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor.apply(doc,DK);var lines=doc.splitTextToSize(notes,CW);lines.forEach(function(line){if(y>270){doc.addPage();y=M;}doc.text(line,M,y);y+=5.5;});}var np=doc.internal.getNumberOfPages();for(var p=1;p<=np;p++){doc.setPage(p);doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor.apply(doc,LT);doc.text('Dope v1 · '+new Date().toLocaleString(),M,280);doc.text('Page '+p+' of '+np,W-M,280,{align:'right'});}doc.save('session-'+new Date().toISOString().slice(0,10)+'.pdf');btn.disabled=false;btn.textContent='↓ Export session PDF';}
+
+
+// ══ GROUPS / TARGET PHOTO ══════════════════════════════════════
+var tgtImg=null,tgtCtx=null,tgtCanvas=null;
+var tgtImpacts=[],tgtPOA=null;
+var tgtMode='poi';
+var tgtCalA=null,tgtCalB=null,tgtScalePxPerIn=null;
+var tgtNaturalW=0,tgtNaturalH=0;
+
+function tgtLoadFile(inp){
+  if(!inp.files||!inp.files[0])return;
+  var url=URL.createObjectURL(inp.files[0]);
+  var img=new Image();
+  img.onload=function(){
+    tgtImg=img;tgtNaturalW=img.naturalWidth;tgtNaturalH=img.naturalHeight;
+    tgtImpacts=[];tgtPOA=null;tgtCalA=null;tgtCalB=null;tgtScalePxPerIn=null;
+    tgtSetupCanvas();
+    document.getElementById('tgt-upload-area').style.display='none';
+    document.getElementById('tgt-canvas-section').style.display='block';
+    tgtRedraw();populateTgtRifles();
+  };
+  img.src=url;
+}
+function tgtSetupCanvas(){
+  tgtCanvas=document.getElementById('tgt-canvas');
+  tgtCtx=tgtCanvas.getContext('2d');
+  var wrap=document.getElementById('tgt-canvas-wrap');
+  var maxW=wrap.clientWidth||350;
+  tgtCanvas.width=tgtNaturalW;tgtCanvas.height=tgtNaturalH;
+  tgtCanvas.style.width=maxW+'px';
+  tgtCanvas.style.height=Math.round(tgtNaturalH*(maxW/tgtNaturalW))+'px';
+  // remove old listeners by cloning
+  var old=tgtCanvas;
+  var nc=old.cloneNode(false);
+  old.parentNode.replaceChild(nc,old);
+  tgtCanvas=nc;tgtCtx=nc.getContext('2d');
+  tgtCanvas.addEventListener('click',tgtCanvasClick);
+  tgtCanvas.addEventListener('touchend',function(e){e.preventDefault();tgtCanvasClick(e);},{passive:false});
+}
+function tgtCanvasPos(e){
+  var rect=tgtCanvas.getBoundingClientRect();
+  var cx=e.touches?e.changedTouches[0].clientX:e.clientX;
+  var cy=e.touches?e.changedTouches[0].clientY:e.clientY;
+  return{x:(cx-rect.left)*(tgtCanvas.width/rect.width),y:(cy-rect.top)*(tgtCanvas.height/rect.height)};
+}
+function tgtCanvasClick(e){
+  var pos=tgtCanvasPos(e);
+  if(tgtMode==='poi'){tgtImpacts.push({x:pos.x,y:pos.y});}
+  else if(tgtMode==='poa'){tgtPOA={x:pos.x,y:pos.y};}
+  else if(tgtMode==='del'){
+    var best=-1,bestD=30*(tgtCanvas.width/350);
+    tgtImpacts.forEach(function(p,i){var d=Math.hypot(p.x-pos.x,p.y-pos.y);if(d<bestD){bestD=d;best=i;}});
+    if(best>=0)tgtImpacts.splice(best,1);
+    // also allow removing POA
+    if(tgtPOA&&Math.hypot(tgtPOA.x-pos.x,tgtPOA.y-pos.y)<bestD)tgtPOA=null;
+  }
+  else if(tgtMode==='cal1'){tgtCalA={x:pos.x,y:pos.y};tgtSetMode('cal2');}
+  else if(tgtMode==='cal2'){
+    tgtCalB={x:pos.x,y:pos.y};
+    if(tgtCalA){var d=Math.hypot(tgtCalB.x-tgtCalA.x,tgtCalB.y-tgtCalA.y);tgtScalePxPerIn=d/(parseFloat(document.getElementById('tgt-scale-in').value)||1);}
+    tgtSetMode('poi');
+  }
+  tgtRedraw();tgtUpdateStats();
+}
+function tgtSetMode(m){
+  tgtMode=m;
+  ['poi','poa','del'].forEach(function(id){var b=document.getElementById('tbt-'+id);if(b)b.classList.toggle('active',id===m);});
+  var hints={poi:'Tap the target to mark each bullet impact',poa:'Tap to set your point of aim (POA)',del:'Tap near a marker to remove it',cal1:'Tap calibration point A on a known reference',cal2:'Tap calibration point B'};
+  var hint=document.getElementById('tgt-mode-hint');if(hint)hint.textContent=hints[m]||'';
+}
+function tgtPresetChange(){var v=document.getElementById('tgt-preset').value;if(v)document.getElementById('tgt-scale-in').value=v;tgtRedraw();tgtUpdateStats();}
+function tgtClearCal(){tgtCalA=null;tgtCalB=null;tgtScalePxPerIn=null;tgtRedraw();tgtUpdateStats();}
+function tgtChangePhoto(){
+  tgtImg=null;tgtImpacts=[];tgtPOA=null;tgtCalA=null;tgtCalB=null;tgtScalePxPerIn=null;
+  document.getElementById('tgt-upload-area').style.display='';
+  document.getElementById('tgt-canvas-section').style.display='none';
+  document.getElementById('tgt-file').value='';
+}
+function tgtClear(){tgtImpacts=[];tgtPOA=null;tgtRedraw();tgtUpdateStats();}
+
+function tgtRedraw(){
+  if(!tgtCtx||!tgtImg)return;
+  var c=tgtCanvas,ctx=tgtCtx;
+  ctx.clearRect(0,0,c.width,c.height);
+  ctx.drawImage(tgtImg,0,0,c.width,c.height);
+  var sc=c.width/350;
+
+  // calibration line
+  if(tgtCalA&&tgtCalB){
+    ctx.save();ctx.strokeStyle='#C8955A';ctx.lineWidth=2*sc;ctx.setLineDash([8*sc,4*sc]);
+    ctx.beginPath();ctx.moveTo(tgtCalA.x,tgtCalA.y);ctx.lineTo(tgtCalB.x,tgtCalB.y);ctx.stroke();
+    ctx.setLineDash([]);
+    [tgtCalA,tgtCalB].forEach(function(p,i){
+      ctx.fillStyle='#C8955A';ctx.strokeStyle='#fff';ctx.lineWidth=1.5*sc;
+      ctx.beginPath();ctx.arc(p.x,p.y,6*sc,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#fff';ctx.font='bold '+(10*sc)+'px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(i===0?'A':'B',p.x,p.y);
+    });
+    ctx.restore();
+    // show scale label
+    if(tgtScalePxPerIn){
+      var mx=(tgtCalA.x+tgtCalB.x)/2,my2=(tgtCalA.y+tgtCalB.y)/2;
+      ctx.save();ctx.fillStyle='#C8955A';ctx.font=(10*sc)+'px -apple-system,sans-serif';ctx.textAlign='center';
+      ctx.fillText((parseFloat(document.getElementById('tgt-scale-in').value)||1)+'"',mx,my2-10*sc);ctx.restore();
+    }
+  } else if(tgtCalA){
+    ctx.save();ctx.fillStyle='#C8955A';ctx.strokeStyle='#fff';ctx.lineWidth=1.5*sc;
+    ctx.beginPath();ctx.arc(tgtCalA.x,tgtCalA.y,6*sc,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold '+(10*sc)+'px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText('A',tgtCalA.x,tgtCalA.y);ctx.restore();
+  }
+
+  // mean + group circle
+  if(tgtImpacts.length>=2){
+    var mx=tgtImpacts.reduce(function(a,p){return a+p.x},0)/tgtImpacts.length;
+    var my=tgtImpacts.reduce(function(a,p){return a+p.y},0)/tgtImpacts.length;
+    // crosshair at mean
+    ctx.save();ctx.strokeStyle='rgba(200,149,90,0.65)';ctx.lineWidth=1*sc;ctx.setLineDash([5*sc,3*sc]);
+    var cr=18*sc;ctx.beginPath();ctx.moveTo(mx-cr,my);ctx.lineTo(mx+cr,my);ctx.moveTo(mx,my-cr);ctx.lineTo(mx,my+cr);ctx.stroke();
+    ctx.setLineDash([]);ctx.restore();
+    // group circle
+    if(tgtScalePxPerIn){
+      var maxD=0;tgtImpacts.forEach(function(p){maxD=Math.max(maxD,Math.hypot(p.x-mx,p.y-my));});
+      ctx.save();ctx.strokeStyle='rgba(200,149,90,0.3)';ctx.lineWidth=1.5*sc;ctx.setLineDash([4*sc,4*sc]);
+      ctx.beginPath();ctx.arc(mx,my,maxD,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);ctx.restore();
+    }
+  }
+
+  // POA
+  if(tgtPOA){
+    var p=tgtPOA,r=14*sc;
+    ctx.save();ctx.strokeStyle='#4CAF72';ctx.lineWidth=2.5*sc;
+    ctx.beginPath();ctx.moveTo(p.x-r,p.y);ctx.lineTo(p.x+r,p.y);ctx.moveTo(p.x,p.y-r);ctx.lineTo(p.x,p.y+r);ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,0.8)';ctx.lineWidth=1*sc;ctx.beginPath();ctx.arc(p.x,p.y,4*sc,0,Math.PI*2);ctx.stroke();
+    ctx.restore();
+  }
+
+  // impacts
+  tgtImpacts.forEach(function(p,i){
+    ctx.save();
+    ctx.fillStyle='rgba(224,82,82,0.22)';ctx.beginPath();ctx.arc(p.x,p.y,11*sc,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#E05252';ctx.strokeStyle='#fff';ctx.lineWidth=1.5*sc;
+    ctx.beginPath();ctx.arc(p.x,p.y,6*sc,0,Math.PI*2);ctx.fill();ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font='bold '+(8*sc)+'px -apple-system,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(i+1,p.x,p.y);ctx.restore();
+  });
+}
+
+function tgtUpdateStats(){
+  var card=document.getElementById('tgt-stats-card');
+  var n=tgtImpacts.length;
+  var cntEl=document.getElementById('tgt-shot-count');
+  if(cntEl)cntEl.textContent=n+' shot'+(n!==1?'s':'');
+  if(n<1){if(card)card.style.display='none';return;}
+  if(card)card.style.display='block';
+
+  var xs=tgtImpacts.map(function(p){return p.x});
+  var ys=tgtImpacts.map(function(p){return p.y});
+  var mx=xs.reduce(function(a,b){return a+b},0)/n;
+  var my=ys.reduce(function(a,b){return a+b},0)/n;
+  var dist=parseInt(document.getElementById('tgt-dist-sel').value)||100;
+  var ppi=tgtScalePxPerIn;
+
+  // ES
+  var espx=0;
+  for(var i=0;i<n;i++)for(var j=i+1;j<n;j++)espx=Math.max(espx,Math.hypot(tgtImpacts[i].x-tgtImpacts[j].x,tgtImpacts[i].y-tgtImpacts[j].y));
+  // mean radius
+  var mrpx=tgtImpacts.reduce(function(a,p){return a+Math.hypot(p.x-mx,p.y-my)},0)/n;
+
+  document.getElementById('tg-es').textContent=ppi?(espx/ppi).toFixed(2)+'"':'—';
+  document.getElementById('tg-moa').textContent=ppi?((espx/ppi)/dist*100*1.047).toFixed(2)+' MOA':'—';
+  document.getElementById('tg-sd').textContent=ppi?(mrpx/ppi).toFixed(2)+'"':'—';
+
+  if(tgtPOA&&ppi){
+    var dx=((mx-tgtPOA.x)/ppi).toFixed(2);
+    var dy=((tgtPOA.y-my)/ppi).toFixed(2);
+    document.getElementById('tg-poi-offset').textContent=(dx>=0?'+':'')+dx+'" H, '+(dy>=0?'+':'')+dy+'" V';
+  } else document.getElementById('tg-poi-offset').textContent=ppi?'Set POA':'Set scale';
+
+  var hspread=ppi?(Math.max.apply(null,xs)-Math.min.apply(null,xs))/ppi:null;
+  var vspread=ppi?(Math.max.apply(null,ys)-Math.min.apply(null,ys))/ppi:null;
+  document.getElementById('tg-hspread').textContent=hspread?hspread.toFixed(2)+'"':'—';
+  document.getElementById('tg-vspread').textContent=vspread?vspread.toFixed(2)+'"':'—';
+
+  // shot list
+  var list=document.getElementById('tgt-shot-list');list.innerHTML='';
+  tgtImpacts.forEach(function(p,i){
+    var dFromMean=ppi?Math.hypot(p.x-mx,p.y-my)/ppi:null;
+    var row=document.createElement('div');row.className='tgt-shot-row';
+    row.innerHTML='<div class="tgt-shot-num">'+(i+1)+'</div>'
+      +'<div class="tgt-shot-info">'+(dFromMean?(dFromMean.toFixed(2)+'" from center'):'—')+'</div>'
+      +'<button class="tgt-shot-del" onclick="tgtDelImpact('+i+')">✕</button>';
+    list.appendChild(row);
+  });
+}
+function tgtDelImpact(i){tgtImpacts.splice(i,1);tgtRedraw();tgtUpdateStats();}
+
+function populateTgtRifles(){
+  var sel=document.getElementById('tgt-rifle-snap');if(!sel)return;
+  var cur=sel.value;
+  sel.innerHTML='<option value="">Select rifle…</option>';
+  rifles.forEach(function(r){var o=document.createElement('option');o.value=r.name;o.textContent=r.name;sel.appendChild(o);});
+  if(cur)sel.value=cur;else if(rifles.length)sel.value=rifles[0].name;
+}
+function tgtSaveToLog(){
+  var n=tgtImpacts.length;if(!n){alert('Mark at least one impact first.');return;}
+  var rifleName=document.getElementById('tgt-rifle-snap').value||'Unknown';
+  var dist=parseInt(document.getElementById('tgt-dist-sel').value)||100;
+  var ppi=tgtScalePxPerIn;
+  var esStr='—',moaStr='—';
+  if(ppi&&n>=2){
+    var esmax=0;
+    for(var i=0;i<n;i++)for(var j=i+1;j<n;j++){esmax=Math.max(esmax,Math.hypot(tgtImpacts[i].x-tgtImpacts[j].x,tgtImpacts[i].y-tgtImpacts[j].y));}
+    esStr=(esmax/ppi).toFixed(2)+'"';moaStr=((esmax/ppi)/dist*100*1.047).toFixed(2)+' MOA';
+  }
+  var ts=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  shots.unshift({rifle:rifleName,dist:dist,elev:'—',wind:'—',da:'—',angle:'—',result:'Group',note:'ES '+esStr+' ('+moaStr+') · '+n+' shots',ts:ts,unit:unit});
+  sv();alert('Saved to log: '+n+' shots, ES '+esStr+' ('+moaStr+')');
+}
+
+
+// ══ BULLET LIBRARY ═════════════════════════════════════════════════════════
+// Curated common precision/hunting bullets with manufacturer data
+var BULLET_LIB = [
+  // ── .22 caliber ──
+  {cal:'.22 LR',     mfr:'CCI',         bullet:'Mini-Mag 40gr LRN',    bw:40,  bt:'G1',bc:0.130,mvRef:1235,note:'Standard velocity'},
+  {cal:'.22-250',    mfr:'Hornady',      bullet:'V-MAX 55gr',           bw:55,  bt:'G1',bc:0.235,mvRef:3680,note:'Varmint'},
+  // ── .224 / 5.56 ──
+  {cal:'.224 / 5.56',mfr:'Sierra',       bullet:'MatchKing 77gr HPBT',  bw:77,  bt:'G1',bc:0.372,mvRef:2750,note:'OTM match'},
+  {cal:'.224 / 5.56',mfr:'Hornady',      bullet:'ELD-M 75gr',           bw:75,  bt:'G7',bc:0.131,mvRef:2790,note:'ELD match G7'},
+  {cal:'.224 / 5.56',mfr:'Berger',       bullet:'Hybrid 73gr',          bw:73,  bt:'G7',bc:0.200,mvRef:2820,note:'Hybrid target'},
+  {cal:'.224 / 5.56',mfr:'Lapua',        bullet:'Scenar-L 77gr',        bw:77,  bt:'G1',bc:0.372,mvRef:2750,note:'Match'},
+  // ── 6mm ──
+  {cal:'6mm (.243)',  mfr:'Berger',       bullet:'Hybrid Target 105gr',  bw:105, bt:'G7',bc:0.283,mvRef:2950,note:'PRS favourite'},
+  {cal:'6mm (.243)',  mfr:'Sierra',       bullet:'MatchKing 107gr HPBT', bw:107, bt:'G7',bc:0.263,mvRef:2910,note:'Long range match'},
+  {cal:'6mm (.243)',  mfr:'Hornady',      bullet:'ELD-M 108gr',          bw:108, bt:'G7',bc:0.276,mvRef:2960,note:'ELD match'},
+  {cal:'6mm (.243)',  mfr:'Lapua',        bullet:'Scenar-L 105gr',       bw:105, bt:'G7',bc:0.260,mvRef:2930,note:'F-class'},
+  {cal:'6mm (.243)',  mfr:'Nosler',       bullet:'RDF 115gr',            bw:115, bt:'G7',bc:0.293,mvRef:2850,note:'High BC'},
+  // ── 6.5mm ──
+  {cal:'6.5mm (.264)',mfr:'Hornady',      bullet:'ELD-M 140gr',          bw:140, bt:'G7',bc:0.315,mvRef:2710,note:'6.5 CM standard'},
+  {cal:'6.5mm (.264)',mfr:'Berger',       bullet:'Hybrid Target 130gr',  bw:130, bt:'G7',bc:0.287,mvRef:2875,note:'PRS'},
+  {cal:'6.5mm (.264)',mfr:'Sierra',       bullet:'MatchKing 142gr HPBT', bw:142, bt:'G7',bc:0.301,mvRef:2650,note:'Classic match'},
+  {cal:'6.5mm (.264)',mfr:'Lapua',        bullet:'Scenar-L 139gr OTM',   bw:139, bt:'G7',bc:0.297,mvRef:2680,note:'Long range'},
+  {cal:'6.5mm (.264)',mfr:'Berger',       bullet:'EOL Elite Hunter 156gr',bw:156, bt:'G7',bc:0.368,mvRef:2650,note:'Hunting, very high BC'},
+  {cal:'6.5mm (.264)',mfr:'Nosler',       bullet:'RDF 140gr',            bw:140, bt:'G7',bc:0.315,mvRef:2700,note:'Match'},
+  // ── 7mm ──
+  {cal:'7mm (.284)', mfr:'Berger',        bullet:'Hybrid Target 180gr',  bw:180, bt:'G7',bc:0.391,mvRef:2800,note:'ELR'},
+  {cal:'7mm (.284)', mfr:'Hornady',       bullet:'ELD-M 162gr',          bw:162, bt:'G7',bc:0.336,mvRef:2900,note:'7 Rem Mag standard'},
+  {cal:'7mm (.284)', mfr:'Sierra',        bullet:'MatchKing 183gr HPBT', bw:183, bt:'G7',bc:0.398,mvRef:2730,note:'ELR match'},
+  {cal:'7mm (.284)', mfr:'Nosler',        bullet:'AccuBond 160gr',       bw:160, bt:'G7',bc:0.298,mvRef:2950,note:'Hunting'},
+  // ── .308 / 7.62mm ──
+  {cal:'.308 / 7.62',mfr:'Sierra',        bullet:'MatchKing 168gr HPBT', bw:168, bt:'G7',bc:0.238,mvRef:2650,note:'F-class, service rifle'},
+  {cal:'.308 / 7.62',mfr:'Sierra',        bullet:'MatchKing 175gr HPBT', bw:175, bt:'G7',bc:0.264,mvRef:2600,note:'MK 262 clone, mil-spec'},
+  {cal:'.308 / 7.62',mfr:'Hornady',       bullet:'ELD-M 168gr',          bw:168, bt:'G7',bc:0.241,mvRef:2700,note:'Match'},
+  {cal:'.308 / 7.62',mfr:'Hornady',       bullet:'ELD-M 178gr',          bw:178, bt:'G7',bc:0.270,mvRef:2600,note:'Long range match'},
+  {cal:'.308 / 7.62',mfr:'Berger',        bullet:'OTM Tactical 175gr',   bw:175, bt:'G7',bc:0.268,mvRef:2600,note:'Tactical match'},
+  {cal:'.308 / 7.62',mfr:'Lapua',         bullet:'Scenar-L 185gr OTM',   bw:185, bt:'G7',bc:0.290,mvRef:2550,note:'F-class'},
+  {cal:'.308 / 7.62',mfr:'Nosler',        bullet:'RDF 168gr',            bw:168, bt:'G7',bc:0.252,mvRef:2650,note:'Match'},
+  {cal:'.308 / 7.62',mfr:'Federal',       bullet:'Gold Medal 175gr SMK', bw:175, bt:'G7',bc:0.264,mvRef:2600,note:'Gold Medal Match'},
+  {cal:'.308 / 7.62',mfr:'Hornady',       bullet:'A-MAX 208gr',          bw:208, bt:'G7',bc:0.330,mvRef:2520,note:'Subsonic/heavy'},
+  // ── .30 cal other ──
+  {cal:'.30 cal (.300)',mfr:'Berger',      bullet:'Hybrid Target 215gr',  bw:215, bt:'G7',bc:0.368,mvRef:2960,note:'.300 WM ELR'},
+  {cal:'.30 cal (.300)',mfr:'Sierra',      bullet:'MatchKing 220gr HPBT', bw:220, bt:'G7',bc:0.350,mvRef:2850,note:'.300 WM ELR'},
+  {cal:'.30 cal (.300)',mfr:'Hornady',     bullet:'ELD-M 225gr',          bw:225, bt:'G7',bc:0.391,mvRef:2900,note:'.300 PRC'},
+  {cal:'.30 cal (.300)',mfr:'Nosler',      bullet:'AccuBond 200gr',       bw:200, bt:'G7',bc:0.310,mvRef:2950,note:'Hunting .300 WM'},
+  // ── .338 ──
+  {cal:'.338',        mfr:'Lapua',         bullet:'Scenar 250gr OTM',     bw:250, bt:'G7',bc:0.338,mvRef:2970,note:'.338 Lapua standard'},
+  {cal:'.338',        mfr:'Berger',        bullet:'Hybrid OTM Tactical 300gr',bw:300,bt:'G7',bc:0.417,mvRef:2850,note:'ELR'},
+  {cal:'.338',        mfr:'Sierra',        bullet:'MatchKing 300gr HPBT', bw:300, bt:'G7',bc:0.375,mvRef:2850,note:'ELR match'},
+  // ── .50 BMG ──
+  {cal:'.50 BMG',     mfr:'Hornady',       bullet:'A-MAX 750gr',          bw:750, bt:'G1',bc:1.050,mvRef:2820,note:'ELR match'},
+  {cal:'.50 BMG',     mfr:'Sierra',        bullet:'MatchKing 750gr HPBT', bw:750, bt:'G1',bc:1.051,mvRef:2820,note:'ELR'},
+  // ── Hunting ──
+  {cal:'.243 Win',    mfr:'Nosler',        bullet:'Partition 95gr',       bw:95,  bt:'G1',bc:0.365,mvRef:3100,note:'Deer/pronghorn'},
+  {cal:'.30-06',      mfr:'Nosler',        bullet:'AccuBond 180gr',       bw:180, bt:'G7',bc:0.261,mvRef:2700,note:'All-around hunting'},
+  {cal:'.30-06',      mfr:'Hornady',       bullet:'ELD-X 178gr',          bw:178, bt:'G7',bc:0.267,mvRef:2720,note:'Hunting long range'},
+  {cal:'6.5 CM',      mfr:'Hornady',       bullet:'ELD-X 143gr',          bw:143, bt:'G7',bc:0.315,mvRef:2700,note:'Hunting precision'},
+];
+
+// ── RIFLE BRANDS / MODELS ──
+var RIFLE_BRANDS = {
+  'Remington': ['700 ADL','700 BDL','700 SPS','700 Sendero SF II','700 Long Range','700 5R Milspec','700 PCR','Model 783','Model 7'],
+  'Ruger': ['Precision Rifle','American Rifle','Hawkeye','M77','No.1','10/22','Scout Rifle'],
+  'Tikka': ['T3x TAC A1','T3x CTR','T3x Lite','T3x Superlite','T1x MTR','T3x Varmint'],
+  'Savage': ['110 Precision','110 Engage Hunter XP','110 Long Range Hunter','12 FV','Model 10','Axis II Precision'],
+  'Barrett': ['MRAD','M82A1','M107A1','M98B','REC10'],
+  'Accuracy International': ['AXMC','AX338','AT','AX308','AXSA'],
+  'Christensen Arms': ['MPR','Mesa','Ridgeline','Modern Precision Rifle','Summit Ti'],
+  'Bergara': ['B-14 HMR','B-14 Ridge','B-14 Timber','Premier HMR Pro','BMP'],
+  'Browning': ['X-Bolt Max LR','X-Bolt Hell\'s Canyon','AB3 Hunter','T-Bolt Target'],
+  'Winchester': ['Model 70 Extreme Weather','Model 70 Super Grade','XPR'],
+  'Weatherby': ['Mark V Accumark','Vanguard Series 2','307 Alpine CT'],
+  'Howa': ['1500 Hogue','Mini Action','1500 Full Stock'],
+  'Mossberg': ['Patriot Long Range Hunter','MVP Flex'],
+  'Springfield Armory': ['Model 2020 WayPoint','Model 2020 Rimfire'],
+  'Desert Tech': ['SRS-A2 Covert','HTI','SRS-M2'],
+  'Proof Research': ['Elevation MTR','Switch','Carbon Fiber Altitude'],
+  'Custom / Build': ['Custom single-shot','Custom repeater','Other'],
+};
+
+// Barrel lengths by action type
+var BARREL_LENGTHS = ['16"','18"','20"','22"','24"','26"','28"','30"','Custom'];
+
+// Common cartridges grouped
+var CARTRIDGES = [
+  {grp:'Rimfire',     rounds:['.22 LR','.22 WMR','.17 HMR','.17 WSM']},
+  {grp:'5.56 / .223', rounds:['.223 Rem','5.56 NATO','22 Nosler','.22-250 Rem']},
+  {grp:'6mm',         rounds:['6mm Creedmoor','6mm ARC','6mm BR Norma','6mm GT','6-6.5 Creedmoor','.243 Win','6mm Rem']},
+  {grp:'6.5mm',       rounds:['6.5 Creedmoor','6.5 PRC','6.5x47 Lapua','6.5x55 Swedish','6.5 Grendel','6.5-284 Norma','.260 Rem']},
+  {grp:'7mm',         rounds:['7mm Rem Mag','7mm PRC','7mm-08 Rem','7mm SAUM','7mm WSM','7mm Wby Mag','.280 Rem','.280 AI']},
+  {grp:'.308 / 7.62', rounds:['.308 Win','7.62x51 NATO','.30-06 Springfield','.30-06 AI','.300 Savage']},
+  {grp:'.300 Mag',    rounds:['.300 Win Mag','.300 PRC','.300 WSM','.300 RUM','.300 Wby Mag','.300 Norma Mag']},
+  {grp:'.338',        rounds:['.338 Lapua Mag','.338 Win Mag','.338 Norma Mag','.338 Federal']},
+  {grp:'.30 Wildcat', rounds:['6.5-300 Wby','6mm Dasher','6mm BRA','6BRX','6 Norma BR']},
+  {grp:'Big Bore',    rounds:['.375 H&H','.416 Rigby','.458 Win Mag','.458 SOCOM','.50 BMG']},
+  {grp:'Other',       rounds:['.223 Wylde','.458 LOTT','Custom / Wildcat']},
+];
+
+// ── MODAL HELPERS ──────────────────────────────────────────────────────────
+function populateBrandSel(){
+  var sel=document.getElementById('m-brand');
+  sel.innerHTML='<option value="">— Brand —</option>';
+  Object.keys(RIFLE_BRANDS).forEach(function(b){
+    var o=document.createElement('option');o.value=b;o.textContent=b;sel.appendChild(o);
+  });
+}
+
+function onBrandChange(){
+  var brand=document.getElementById('m-brand').value;
+  var sel=document.getElementById('m-model');
+  sel.innerHTML='<option value="">— Model —</option>';
+  if(brand&&RIFLE_BRANDS[brand]){
+    RIFLE_BRANDS[brand].forEach(function(m){
+      var o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);
+    });
+  }
+  autoFillName();
+}
+
+function onModelChange(){autoFillName();}
+
+function autoFillName(){
+  var brand=document.getElementById('m-brand').value;
+  var model=document.getElementById('m-model').value;
+  var cart=document.getElementById('m-cart').value;
+  var barrel=document.getElementById('m-barrel').value;
+  var parts=[];
+  if(brand)parts.push(brand);
+  if(model)parts.push(model);
+  if(cart)parts.push(cart);
+  if(barrel)parts.push(barrel);
+  if(parts.length>0)document.getElementById('mn').value=parts.join(' ');
+}
+
+function populateCartSel(){
+  var sel=document.getElementById('m-cart');
+  sel.innerHTML='<option value="">— Cartridge —</option>';
+  CARTRIDGES.forEach(function(g){
+    var og=document.createElement('optgroup');og.label=g.grp;
+    g.rounds.forEach(function(r){var o=document.createElement('option');o.value=r;o.textContent=r;og.appendChild(o);});
+    sel.appendChild(og);
+  });
+}
+
+function populateBarrelSel(){
+  var sel=document.getElementById('m-barrel');
+  sel.innerHTML='<option value="">— Barrel —</option>';
+  BARREL_LENGTHS.forEach(function(l){var o=document.createElement('option');o.value=l;o.textContent=l;sel.appendChild(o);});
+}
+
+function populateBulletCalSel(){
+  var cals=[...new Set(BULLET_LIB.map(function(b){return b.cal}))];
+  var sel=document.getElementById('m-bcal');
+  sel.innerHTML='<option value="">— Caliber —</option>';
+  cals.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;sel.appendChild(o);});
+}
+
+function onBulletCalChange(){
+  var cal=document.getElementById('m-bcal').value;
+  var mfrs=[...new Set(BULLET_LIB.filter(function(b){return b.cal===cal}).map(function(b){return b.mfr}))];;
+  var sel=document.getElementById('m-bmfr');
+  sel.innerHTML='<option value="">— Manufacturer —</option>';
+  mfrs.forEach(function(m){var o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);});
+  document.getElementById('m-bbul').innerHTML='<option value="">— Bullet —</option>';
+}
+
+function onBulletMfrChange(){
+  var cal=document.getElementById('m-bcal').value;
+  var mfr=document.getElementById('m-bmfr').value;
+  var bullets=BULLET_LIB.filter(function(b){return b.cal===cal&&b.mfr===mfr});
+  var sel=document.getElementById('m-bbul');
+  sel.innerHTML='<option value="">— Bullet —</option>';
+  bullets.forEach(function(b,i){
+    var o=document.createElement('option');
+    o.value=i+'|'+b.bullet;
+    o.textContent=b.bullet+(b.note?' ('+b.note+')':'');
+    sel.appendChild(o);
+  });
+}
+
+function onBulletSelect(){
+  var cal=document.getElementById('m-bcal').value;
+  var mfr=document.getElementById('m-bmfr').value;
+  var val=document.getElementById('m-bbul').value;
+  if(!val)return;
+  var bullets=BULLET_LIB.filter(function(b){return b.cal===cal&&b.mfr===mfr});
+  var idx=parseInt(val.split('|')[0]);
+  var b=bullets[idx];
+  if(!b)return;
+  document.getElementById('mbw').value=b.bw;
+  document.getElementById('mbt').value=b.bt;
+  document.getElementById('mb').value=b.bc;
+  document.getElementById('mmv').value=b.mvRef;
+  // show info strip
+  var info=document.getElementById('bullet-info');
+  info.style.display='block';
+  info.innerHTML='<span style="color:var(--ac)">'+b.mfr+' '+b.bullet+'</span> &mdash; G'+b.bt.slice(1)+' BC '+b.bc+' &middot; Ref MV '+b.mvRef+' fps'+(b.note?' &middot; '+b.note:'');
+}
+
+var editRifleIdx = -1; // -1 = adding new, >=0 = editing
+
+function openAdd(){
+  editRifleIdx = -1;
+  document.getElementById('modal-title').textContent = 'Add rifle';
+  document.getElementById('modal-save-btn').textContent = 'Save rifle';
+  // clear all fields
+  ['mn','mc','mbw','mb','mmv','mz','msh','mnt','m-twist','m-stock','m-scope'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  ['m-brand','m-model','m-cart','m-barrel','m-bcal','m-bmfr','m-bbul'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  var bi=document.getElementById('bullet-info'); if(bi) bi.style.display='none';
+  document.getElementById('addmodal').classList.add('on');
+  populateBrandSel();
+  populateCartSel();
+  populateBarrelSel();
+  populateBulletCalSel();
+}
+
+function openEdit(i){
+  editRifleIdx = i;
+  var r = rifles[i];
+  document.getElementById('modal-title').textContent = 'Edit rifle';
+  document.getElementById('modal-save-btn').textContent = 'Update rifle';
+  document.getElementById('addmodal').classList.add('on');
+  populateBrandSel();
+  populateCartSel();
+  populateBarrelSel();
+  populateBulletCalSel();
+
+  // Pre-fill all fields from stored rifle
+  document.getElementById('mn').value    = r.name  || '';
+  document.getElementById('mc').value    = r.cal   || '';
+  document.getElementById('mbw').value   = r.bw    || '';
+  document.getElementById('mbt').value   = r.bt    || 'G7';
+  document.getElementById('mb').value    = r.bc    || '';
+  document.getElementById('mmv').value   = r.mv    || '';
+  document.getElementById('mz').value    = r.z     || '';
+  document.getElementById('msh').value   = r.sh    || '';
+  document.getElementById('mnt').value   = r.notes || '';
+  var tw=document.getElementById('m-twist');   if(tw)  tw.value  = r.twist || '';
+  var st=document.getElementById('m-stock');   if(st)  st.value  = r.stock || '';
+  var sc=document.getElementById('m-scope');   if(sc)  sc.value  = r.scope || '';
+
+  // Brand → populate models → set
+  if(r.brand){
+    document.getElementById('m-brand').value = r.brand;
+    onBrandChange();
+    if(r.model) document.getElementById('m-model').value = r.model;
+  }
+  // Cartridge
+  if(r.cal) document.getElementById('m-cart').value = r.cal;
+  // Barrel
+  if(r.barrel) document.getElementById('m-barrel').value = r.barrel;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ══ INIT ══
+renderChips();setWindDeg(90);updDA();calc();
+if(coldBore.e)document.getElementById('cb-elev-inp').value=coldBore.e;
+if(coldBore.w)document.getElementById('cb-wind-inp').value=coldBore.w;
+</script>
+</body>
+</html>
+function closeAdd(){
+  document.getElementById('addmodal').classList.remove('on');
+  if(typeof editRifleIdx!=='undefined') editRifleIdx=-1;
+  document.getElementById('modal-title').textContent='Add rifle';
+  document.getElementById('modal-save-btn').textContent='Save rifle';
+  var bi=document.getElementById('bullet-info');if(bi)bi.style.display='none';
+}
+function saveRifle(){
+  var name=document.getElementById('mn').value.trim();
+  if(!name){alert('Name required');return;}
+  var mCart=document.getElementById('m-cart');
+  var entry={
+    name:name,
+    brand:document.getElementById('m-brand')?document.getElementById('m-brand').value:'',
+    model:document.getElementById('m-model')?document.getElementById('m-model').value:'',
+    cal:(mCart&&mCart.value)||document.getElementById('mc').value||'Unknown',
+    barrel:document.getElementById('m-barrel')?document.getElementById('m-barrel').value:'',
+    twist:document.getElementById('m-twist')?document.getElementById('m-twist').value:'',
+    stock:document.getElementById('m-stock')?document.getElementById('m-stock').value:'',
+    scope:document.getElementById('m-scope')?document.getElementById('m-scope').value:'',
+    bw:parseFloat(document.getElementById('mbw').value)||168,
+    bt:document.getElementById('mbt').value,
+    bc:parseFloat(document.getElementById('mb').value)||0.3,
+    mv:parseFloat(document.getElementById('mmv').value)||2600,
+    z:parseFloat(document.getElementById('mz').value)||100,
+    sh:parseFloat(document.getElementById('msh').value)||1.5,
+    notes:document.getElementById('mnt').value.trim()
+  };
+  if(typeof editRifleIdx!=='undefined'&&editRifleIdx>=0){
+    rifles[editRifleIdx]=entry;
+  } else {
+    rifles.push(entry);
+    aIdx=rifles.length-1;
+  }
+  sv();renderChips();calc();buildDope();renderGear();updTruePred();closeAdd();populateTgtRifles();
+}
